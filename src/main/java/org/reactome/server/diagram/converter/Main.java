@@ -10,7 +10,8 @@ import org.reactome.server.diagram.converter.tools.Convertor2JsonTool;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class Main {
-    public static enum Tool {
+
+    public enum Tool {
         CONVERT;
 
         public static String getOptions(){
@@ -51,7 +52,7 @@ public class Main {
 
         Tool tool = Tool.getTool(args[0]);
         if(tool!=null){
-            switch (Tool.getTool(args[0])){
+            switch (tool){
                 case CONVERT:
                     Convertor2JsonTool.main(args);
                     break;
