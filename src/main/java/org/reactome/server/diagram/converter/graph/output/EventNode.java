@@ -10,12 +10,7 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class EventNode {
-
-    private Long dbId;
-    private String stId;
-    private String displayName;
-    public String schemaClass;
+public class EventNode extends GraphNode {
 
     private Set<Long> preceding = new HashSet<>();
     private Set<Long> following = new HashSet<>();
@@ -30,10 +25,7 @@ public class EventNode {
     public Long diagramId;
 
     public EventNode(GKInstance event, Long diagramId) {
-        this.dbId = event.getDBID();
-        this.setStableIdentifier(event);
-        this.displayName = event.getDisplayName();
-        this.schemaClass = event.getSchemClass().getName();
+        super(event);
 
         this.inputs = this.getItemsIds(event, ReactomeJavaConstants.input);
         this.outputs = this.getItemsIds(event, ReactomeJavaConstants.output);
@@ -145,14 +137,6 @@ public class EventNode {
         return rtn;
     }
 
-    private void setStableIdentifier(GKInstance event){
-        try {
-            GKInstance stableIdentifier = (GKInstance) event.getAttributeValue(ReactomeJavaConstants.stableIdentifier);
-            this.stId = (String) stableIdentifier.getAttributeValue(ReactomeJavaConstants.identifier);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private void setActivatorsInhibitorsRequirements(GKInstance event) {
         Collection<GKInstance> regulations = null;

@@ -12,15 +12,18 @@ public class Graph {
 
     private Long dbId;
     private String stId;
-    private Collection<EntityNode> nodes;
 
+    private Collection<EntityNode> nodes;
     private Collection<EventNode> edges;
 
-    public Graph(Long dbId, String stId, Collection<EntityNode> nodes, Collection<EventNode> edges) {
+    private Collection<Subpathway> subpathways;
+
+    public Graph(Long dbId, String stId, Collection<EntityNode> nodes, Collection<EventNode> edges, Collection<Subpathway> subpathways) {
         this.dbId = dbId;
         this.stId = stId;
         this.nodes = nodes;
         this.edges = edges;
+        this.subpathways = subpathways;
     }
 
     public Long getDbId() {
@@ -37,5 +40,9 @@ public class Graph {
 
     public Collection<EventNode> getEdges() {
         return edges;
+    }
+
+    public Collection<Subpathway> getSubpathways() {
+        return subpathways;
     }
 }

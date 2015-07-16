@@ -11,12 +11,9 @@ import java.util.Set;
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class EntityNode {
+public class EntityNode extends GraphNode {
 
-    public Long dbId;
-    public String stId;
-    public String displayName;
-    public String schemaClass;
+
     public Long speciesID;
 
     public List<Long> diagramIds;
@@ -29,10 +26,7 @@ public class EntityNode {
     public Set<Long> children = null;
 
     public EntityNode(PhysicalEntityNode node) {
-        this.dbId = node.getDbId();
-        this.stId = node.getStId();
-        this.displayName = node.getDisplayName();
-        this.schemaClass = node.getSchemaClass();
+        super(node);
         this.identifier = node.getIdentifier();
 
         if(node.getSpecies()!=null) {
