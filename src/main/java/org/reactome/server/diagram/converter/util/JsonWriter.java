@@ -38,7 +38,7 @@ public abstract class JsonWriter {
 
             //Create symbolicLink
             if (!Files.exists(Paths.get(outLinkedFile.getAbsolutePath()))) {
-                Files.createSymbolicLink(Paths.get(outLinkedFile.getAbsolutePath()), Paths.get(outJSONFile.getAbsolutePath()));
+                Files.createSymbolicLink(Paths.get(outLinkedFile.getAbsolutePath()), Paths.get(outJSONFile.getName()));
             }
 
         } catch (IOException e) {
@@ -59,7 +59,7 @@ public abstract class JsonWriter {
 
             //Create symbolicLink
             if (!Files.exists(Paths.get(outLinkedFile.getAbsolutePath()))) {
-                Files.createSymbolicLink(Paths.get(outLinkedFile.getAbsolutePath()), Paths.get(outGraphFile.getAbsolutePath()));
+                Files.createSymbolicLink(Paths.get(outLinkedFile.getAbsolutePath()), Paths.get(outGraphFile.getName()));
             }
 
         } catch (IOException e) {
