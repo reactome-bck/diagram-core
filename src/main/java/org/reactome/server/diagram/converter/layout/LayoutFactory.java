@@ -103,13 +103,13 @@ public abstract class LayoutFactory {
             outputDiagram.setOverlaidObjects(outputDiagram.notFadeOut);
 
             //Remove the reactions overlaid by disease reactions
-            outputDiagram.normalEventsOverlaidByDiseaseEventsCleanup();
+//            outputDiagram.normalEventsOverlaidByDiseaseEventsCleanup();
 
             //Process disease components
             outputDiagram.setDiseaseComponents();
 
             //Clean up links - delete those with no inputs/outputs
-            outputDiagram.cleanUpOrphanLinks();
+//            outputDiagram.cleanUpOrphanLinks();
 
             //Annotate and fix empty or incomplete compartments
             outputDiagram.fixCompartments();
