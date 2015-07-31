@@ -138,20 +138,29 @@ public class DiagramGraphFactory {
         this.eventBuffer = new HashMap<>();
         if (edges != null) {
             for (Edge edge : edges) {
-                try {
-                    GKInstance event = dba.fetchInstance(edge.reactomeId);
-                    if (event.getSchemClass().isa(ReactomeJavaConstants.Event)) {
-                        EventNode eNode = new EventNode(event, edge.id);
-                        this.eventBuffer.put(eNode.getDbId(), eNode);
-                    } else {
-                        logger.error(edge.displayName + " is not a Event");
-                    }
-                } catch (Exception e) {
-                    logger.error(edge.displayName + " is not in the database", e);
-                }
+                EventNode eNode = getOrCreate(edge);
+                eNode.addDiagramId(edge.id);
             }
         }
         return this.eventBuffer.values();
+    }
+
+    private EventNode getOrCreate(Edge edge){
+        EventNode eventNode = this.eventBuffer.get(edge.reactomeId);
+        if(eventNode==null) {
+            try {
+                GKInstance event = dba.fetchInstance(edge.reactomeId);
+                if (event.getSchemClass().isa(ReactomeJavaConstants.Event)) {
+                    eventNode = new EventNode(event);
+                    this.eventBuffer.put(eventNode.getDbId(), eventNode);
+                } else {
+                    logger.error(edge.displayName + " is not a Event");
+                }
+            } catch (Exception e) {
+                logger.error(edge.displayName + " is not in the database", e);
+            }
+        }
+        return eventNode;
     }
 
     //#############################  /GRAPH EDGES/  #############################
@@ -179,7 +188,7 @@ public class DiagramGraphFactory {
                         if (containedEvents != null) {
                             Set<Long> dbIds = new HashSet<>();
                             for (GKInstance instance : containedEvents) {
-                                if(instance.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent)) {
+                                if (instance.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent)) {
                                     dbIds.add(instance.getDBID());
                                 }
                             }
@@ -190,7 +199,7 @@ public class DiagramGraphFactory {
             }
         }
 
-        if(rtn.isEmpty()) return null;
+        if (rtn.isEmpty()) return null;
         return rtn;
     }
 

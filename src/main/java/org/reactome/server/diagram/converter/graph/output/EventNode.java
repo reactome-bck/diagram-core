@@ -22,9 +22,9 @@ public class EventNode extends GraphNode {
     public Set<Long> activators = new HashSet<>();
     public Set<Long> requirements = new HashSet<>();
 
-    public Long diagramId;
+    public Set<Long> diagramIds = new HashSet<>();
 
-    public EventNode(GKInstance event, Long diagramId) {
+    public EventNode(GKInstance event) {
         super(event);
 
         this.inputs = this.getItemsIds(event, ReactomeJavaConstants.input);
@@ -38,8 +38,10 @@ public class EventNode extends GraphNode {
         this.setActivatorsInhibitorsRequirements(event);
 
         this.preceding = this.getItemsIds(event, ReactomeJavaConstants.precedingEvent);
+    }
 
-        this.diagramId = diagramId;
+    public void addDiagramId(Long diagramId){
+        this.diagramIds.add(diagramId);
     }
 
     public Long getDbId() {
