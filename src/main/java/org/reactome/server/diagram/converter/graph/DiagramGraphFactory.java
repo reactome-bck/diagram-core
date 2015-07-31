@@ -55,6 +55,7 @@ public class DiagramGraphFactory {
     private Collection<PhysicalEntityNode> getPhysicalEntityNodes(List<Node> nodes) {
         this.physicalEntityBuffer = new HashMap<>();
         for (Node node : nodes) {
+            if(node.isFadeOut!=null) continue;
             try {
                 GKInstance instance = dba.fetchInstance(node.reactomeId);
                 if (instance.getSchemClass().isa(ReactomeJavaConstants.PhysicalEntity) ||
@@ -138,6 +139,7 @@ public class DiagramGraphFactory {
         this.eventBuffer = new HashMap<>();
         if (edges != null) {
             for (Edge edge : edges) {
+                if(edge.isFadeOut!=null) continue;
                 EventNode eNode = getOrCreate(edge);
                 eNode.addDiagramId(edge.id);
             }
