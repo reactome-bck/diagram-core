@@ -23,6 +23,8 @@ import org.reactome.server.diagram.converter.util.JsonWriter;
 import org.reactome.server.diagram.converter.util.TrivialChemicals;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 
@@ -192,13 +194,13 @@ public class Convertor2JsonTool {
     private static Diagram getDiagram(GKInstance pathway){
         try {
             String stId = diagramFetcher.getPathwayStableId(pathway);
-            String xml = diagramFetcher.getPathwayDiagramXML(pathway);
+            String xml = null; //diagramFetcher.getPathwayDiagramXML(pathway);
 
-//            RestTemplate restTemplate = new RestTemplate();
-//            ResponseEntity<String> response = restTemplate.getForEntity(
-//                    RESTFUL_API + pathway.getDBID() + "/XML",
-//                    String.class);
-//            xml = response.getBody();
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.getForEntity(
+                    RESTFUL_API + pathway.getDBID() + "/XML",
+                    String.class);
+            xml = response.getBody();
             if(xml!=null) {
                 Process process = processFactory.createProcess(xml, stId);
                 return LayoutFactory.getDiagramFromProcess(process, pathway.getDBID(), stId);
