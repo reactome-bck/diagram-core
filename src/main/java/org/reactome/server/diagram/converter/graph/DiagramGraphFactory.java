@@ -2,7 +2,6 @@ package org.reactome.server.diagram.converter.graph;
 
 import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
-import org.gk.model.InstanceUtilities;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.gk.schema.SchemaClass;
@@ -55,7 +54,7 @@ public class DiagramGraphFactory {
     private Collection<PhysicalEntityNode> getPhysicalEntityNodes(List<Node> nodes) {
         this.physicalEntityBuffer = new HashMap<>();
         for (Node node : nodes) {
-            if(node.isFadeOut!=null) continue;
+            if (node.isFadeOut != null) continue;
             try {
                 GKInstance instance = dba.fetchInstance(node.reactomeId);
                 if (instance.getSchemClass().isa(ReactomeJavaConstants.PhysicalEntity) ||
@@ -139,7 +138,7 @@ public class DiagramGraphFactory {
         this.eventBuffer = new HashMap<>();
         if (edges != null) {
             for (Edge edge : edges) {
-                if(edge.isFadeOut!=null) continue;
+                if (edge.isFadeOut != null) continue;
                 EventNode eNode = getOrCreate(edge);
                 eNode.addDiagramId(edge.id);
             }
@@ -147,9 +146,9 @@ public class DiagramGraphFactory {
         return this.eventBuffer.values();
     }
 
-    private EventNode getOrCreate(Edge edge){
+    private EventNode getOrCreate(Edge edge) {
         EventNode eventNode = this.eventBuffer.get(edge.reactomeId);
-        if(eventNode==null) {
+        if (eventNode == null) {
             try {
                 GKInstance event = dba.fetchInstance(edge.reactomeId);
                 if (event.getSchemClass().isa(ReactomeJavaConstants.Event)) {
@@ -180,29 +179,57 @@ public class DiagramGraphFactory {
         }
 
         Set<Subpathway> rtn = new HashSet<>();
-        Set<GKInstance> events = InstanceUtilities.getContainedEvents(pathway);
-        if (events != null) {
-            for (GKInstance event : events) {
-                if (event.getSchemClass().isa(ReactomeJavaConstants.Pathway)) {
-                    if (!hasDiagram(event)) { //Do not go deeper when not needed :)
-                        GraphNode node = new GraphNode(event);
-                        Set<GKInstance> containedEvents = InstanceUtilities.getContainedEvents(event);
-                        if (containedEvents != null) {
-                            Set<Long> dbIds = new HashSet<>();
-                            for (GKInstance instance : containedEvents) {
-                                if (instance.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent)) {
-                                    dbIds.add(instance.getDBID());
-                                }
-                            }
-                            rtn.add(new Subpathway(node, dbIds));
-                        }
-                    }
-                }
-            }
+        for (GKInstance subpathway : getSubpathways(pathway)) {
+            GraphNode node = new GraphNode(subpathway);
+            rtn.add(new Subpathway(node, getContainedEvents(subpathway)));
         }
 
         if (rtn.isEmpty()) return null;
         return rtn;
+    }
+
+    private Set<GKInstance> getSubpathways(GKInstance pathway){
+        Set<GKInstance> subpathways = new HashSet<>();
+        if (!pathway.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasEvent)) return subpathways;
+        try {
+            List hasEvents = pathway.getAttributeValuesList(ReactomeJavaConstants.hasEvent);
+            if(hasEvents!=null){
+                for (Object aux : hasEvents) {
+                    GKInstance event = (GKInstance) aux;
+                    if(event.getSchemClass().isa(ReactomeJavaConstants.Pathway)){
+                        subpathways.add(event);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("getAttributeValuesList with hasEvent has failed for " + pathway.getDBID());
+        }
+        return subpathways;
+    }
+
+    private Set<Long> getContainedEvents(GKInstance pathway) {
+        Set<Long> events = new HashSet<>();
+        if (!pathway.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasEvent)) return events;
+        try {
+            List hasEvents = pathway.getAttributeValuesList(ReactomeJavaConstants.hasEvent);
+            if (hasEvents != null) {
+                for (Object aux : hasEvents) {
+                    GKInstance event = (GKInstance) aux;
+                    if (event.getSchemClass().isa(ReactomeJavaConstants.Pathway)) {
+                        if (hasDiagram(event)) {
+                            events.add(event.getDBID());
+                        } else {
+                            events.addAll(getContainedEvents(event));
+                        }
+                    } else {
+                        events.add(event.getDBID());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("getAttributeValuesList with hasEvent has failed for " + pathway.getDBID());
+        }
+        return events;
     }
 
     private boolean hasDiagram(GKInstance pathway) {
