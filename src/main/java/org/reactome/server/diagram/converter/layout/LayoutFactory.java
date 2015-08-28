@@ -76,7 +76,7 @@ public abstract class LayoutFactory {
             }
 
             //Clean up links - delete those with no inputs/outputs
-            outputDiagram.cleanUpOrphanLinks();
+//            outputDiagram.cleanUpOrphanLinks();
 
             //Parse Pathways
             outputDiagram.pathways = inputProcess.getPathways().toString();
