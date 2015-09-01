@@ -169,7 +169,7 @@ public class DiagramGraphFactory {
 
     //#############################  GRAPH SUBPATHWAYS  #########################
 
-    private Collection<Subpathway> getSubpathways(Diagram diagram) {
+    private Collection<SubpathwayNode> getSubpathways(Diagram diagram) {
         GKInstance pathway;
         try {
             pathway = dba.fetchInstance(diagram.dbId);
@@ -178,10 +178,10 @@ public class DiagramGraphFactory {
             return null;
         }
 
-        Set<Subpathway> rtn = new HashSet<>();
+        Set<SubpathwayNode> rtn = new HashSet<>();
         for (GKInstance subpathway : getSubpathways(pathway)) {
             GraphNode node = new GraphNode(subpathway);
-            rtn.add(new Subpathway(node, getContainedEvents(subpathway)));
+            rtn.add(new SubpathwayNode(node, getContainedEvents(subpathway)));
         }
 
         if (rtn.isEmpty()) return null;

@@ -16,9 +16,9 @@ public class Graph {
     private Collection<EntityNode> nodes;
     private Collection<EventNode> edges;
 
-    private Collection<Subpathway> subpathways;
+    private Collection<SubpathwayNode> subpathways;
 
-    public Graph(Long dbId, String stId, Collection<EntityNode> nodes, Collection<EventNode> edges, Collection<Subpathway> subpathways) {
+    public Graph(Long dbId, String stId, Collection<EntityNode> nodes, Collection<EventNode> edges, Collection<SubpathwayNode> subpathways) {
         this.dbId = dbId;
         this.stId = stId;
         this.nodes = nodes;
@@ -42,7 +42,7 @@ public class Graph {
         return edges;
     }
 
-    public Collection<Subpathway> getSubpathways() {
+    public Collection<SubpathwayNode> getSubpathways() {
         return subpathways;
     }
 }
