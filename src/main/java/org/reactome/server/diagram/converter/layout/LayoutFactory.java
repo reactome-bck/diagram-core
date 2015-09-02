@@ -64,19 +64,24 @@ public abstract class LayoutFactory {
             //Parse Edges
             for (EdgeCommon edgeCommon : extractEdgesList(inputProcess.getEdges())) {
                 if(edgeCommon instanceof Link){
-                    outputDiagram.links.add((Link) edgeCommon);
+                    if(outputDiagram.isDisease==null || outputDiagram.isDisease==false){
+                        outputDiagram.links.add((Link) edgeCommon);
+                    }else if(outputDiagram.shouldBeIncluded(((Link) edgeCommon).id.intValue())) {
+                        //If it is a disease diagram then only the nodes of the 5 lists are kept
+                        outputDiagram.links.add((Link) edgeCommon);
+                    }
                 }else if(edgeCommon instanceof Edge){
                     if(outputDiagram.isDisease==null || outputDiagram.isDisease==false){
-                        //If it is a disease diagram then only the nodes of the 5 lists are kept
                         outputDiagram.edges.add((Edge) edgeCommon);
                     }else if(outputDiagram.shouldBeIncluded(((Edge) edgeCommon).id.intValue())) {
+                        //If it is a disease diagram then only the nodes of the 5 lists are kept
                         outputDiagram.edges.add((Edge) edgeCommon);
                     }
                 }
             }
 
             //Clean up links - delete those with no inputs/outputs
-//            outputDiagram.cleanUpOrphanLinks();
+            outputDiagram.cleanUpOrphanLinks();
 
             //Parse Pathways
             outputDiagram.pathways = inputProcess.getPathways().toString();
