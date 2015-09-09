@@ -195,7 +195,8 @@ public class Convertor2JsonTool {
         try {
             String stId = diagramFetcher.getPathwayStableId(pathway);
             String xml = null; //diagramFetcher.getPathwayDiagramXML(pathway);
-
+            // For the time being we use the RESTFul API to retrieve the XML as
+            // DiagramFetcher does not provide the same diagram ids
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.getForEntity(
                     RESTFUL_API + pathway.getDBID() + "/XML",

@@ -31,8 +31,8 @@ public class DiagramGraphFactory {
     }
 
     public Graph getGraph(Diagram diagram) {
-        return new Graph(diagram.dbId,
-                diagram.stableId,
+        return new Graph(diagram.getDbId(),
+                diagram.getStableId(),
                 getGraphNodes(diagram),
                 getGraphEdges(diagram),
                 getSubpathways(diagram));
@@ -45,13 +45,13 @@ public class DiagramGraphFactory {
 
     private Set<EntityNode> getGraphNodes(Diagram diagram) {
         Set<EntityNode> rtn = new HashSet<>();
-        for (PhysicalEntityNode pe : getPhysicalEntityNodes(diagram.nodes)) {
+        for (PhysicalEntityNode pe : getPhysicalEntityNodes(diagram.getNodes())) {
             rtn.add(new EntityNode(pe));
         }
         return rtn;
     }
 
-    private Collection<PhysicalEntityNode> getPhysicalEntityNodes(List<Node> nodes) {
+    private Collection<PhysicalEntityNode> getPhysicalEntityNodes(Collection<Node> nodes) {
         this.physicalEntityBuffer = new HashMap<>();
         for (Node node : nodes) {
             if (node.isFadeOut != null) continue;
@@ -121,7 +121,7 @@ public class DiagramGraphFactory {
     private Map<Long, EventNode> eventBuffer;
 
     private Collection<EventNode> getGraphEdges(Diagram diagram) {
-        for (EventNode edge : getEventNodes(diagram.edges)) {
+        for (EventNode edge : getEventNodes(diagram.getEdges())) {
             if (edge.getPreceding() != null) {
                 for (Long p : edge.getPreceding()) {
                     EventNode preceding = eventBuffer.get(p);
@@ -134,7 +134,7 @@ public class DiagramGraphFactory {
         return eventBuffer.values();
     }
 
-    private Collection<EventNode> getEventNodes(List<Edge> edges) {
+    private Collection<EventNode> getEventNodes(Collection<Edge> edges) {
         this.eventBuffer = new HashMap<>();
         if (edges != null) {
             for (Edge edge : edges) {
@@ -172,9 +172,9 @@ public class DiagramGraphFactory {
     private Collection<SubpathwayNode> getSubpathways(Diagram diagram) {
         GKInstance pathway;
         try {
-            pathway = dba.fetchInstance(diagram.dbId);
+            pathway = dba.fetchInstance(diagram.getDbId());
         } catch (Exception e) {
-            logger.error(diagram.dbId + " is not in the database", e);
+            logger.error(diagram.getDbId() + " is not in the database", e);
             return null;
         }
 

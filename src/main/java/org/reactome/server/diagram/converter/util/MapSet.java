@@ -57,4 +57,12 @@ public class MapSet<S,T> implements Serializable {
     public Set<T> remove(S key){
         return this.map.remove(key);
     }
+
+    public Collection<T> values(){
+        Set<T> rtn = new HashSet<>();
+        for (S s : map.keySet()) {
+            rtn.addAll(map.get(s));
+        }
+        return rtn;
+    }
 }

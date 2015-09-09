@@ -27,8 +27,8 @@ public abstract class JsonWriter {
     }
 
     public static void serialiseDiagram(Diagram diagram, String outputDirectory){
-        File outJSONFile = new File(outputDirectory + File.separator + diagram.dbId + ".json");
-        File outLinkedFile = new File(outputDirectory + File.separator + diagram.stableId + ".json");
+        File outJSONFile = new File(outputDirectory + File.separator + diagram.getDbId() + ".json");
+        File outLinkedFile = new File(outputDirectory + File.separator + diagram.getStableId() + ".json");
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             mapper.writeValue(byteArrayOutputStream, diagram);

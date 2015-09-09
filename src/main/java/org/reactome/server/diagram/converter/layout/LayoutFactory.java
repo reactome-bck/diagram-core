@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public abstract class LayoutFactory {
@@ -23,68 +23,42 @@ public abstract class LayoutFactory {
             outputDiagram = new Diagram();
 
             //Parse General fields
-            outputDiagram.nextId = inputProcess.getNextId().longValue();
-            outputDiagram.reactomeDiagramId = inputProcess.getReactomeDiagramId().longValue();
+            outputDiagram.setDbId(dbId);
+            outputDiagram.setStableId(stId);
 
-            outputDiagram.dbId = dbId;
-            outputDiagram.stableId = stId;
-
-            outputDiagram.isDisease = inputProcess.isIsDisease();
-            outputDiagram.forNormalDraw = inputProcess.isForNormalDraw();
-            outputDiagram.hideCompartmentInName = inputProcess.isHideCompartmentInName();
+            outputDiagram.setIsDisease(inputProcess.isIsDisease());
+            outputDiagram.setForNormalDraw(inputProcess.isForNormalDraw());
 
             //Parse properties
             Map<String, Serializable> properties =  extractProperties(inputProcess.getProperties());
-            outputDiagram.displayName = (properties.get("displayName")!=null) ? properties.get("displayName").toString() : null;
-            outputDiagram.isChanged =  (properties.get("isChanged") != null) ? Boolean.valueOf( properties.get("isChanged").toString() ): null;
+            outputDiagram.setDisplayName((properties.get("displayName")!=null) ? properties.get("displayName").toString() : null);
 
             //Parse General list-fields
-            outputDiagram.normalComponents = ListToSet(extractIntegerListFromString(inputProcess.getNormalComponents(), ","));
-            outputDiagram.diseaseComponents = ListToSet(extractIntegerListFromString(inputProcess.getDiseaseComponents(), ","));
-            outputDiagram.crossedComponents = ListToSet(extractIntegerListFromString(inputProcess.getCrossedComponents(), ","));
-            outputDiagram.notFadeOut = ListToSet(extractIntegerListFromString(inputProcess.getOverlaidComponents(), ","));
-            outputDiagram.lofNodes = ListToSet(extractIntegerListFromString(inputProcess.getLofNodes(), ","));
+            outputDiagram.setNormalComponents(ListToSet(extractListFromString(inputProcess.getNormalComponents(), ",")));
+            outputDiagram.setDiseaseComponents(ListToSet(extractListFromString(inputProcess.getDiseaseComponents(), ",")));
+            outputDiagram.setCrossedComponents(ListToSet(extractListFromString(inputProcess.getCrossedComponents(), ",")));
+            outputDiagram.setNotFadeOut(ListToSet(extractListFromString(inputProcess.getOverlaidComponents(), ",")));
+            outputDiagram.setLofNodes(ListToSet(extractListFromString(inputProcess.getLofNodes(), ",")));
 
             //Parse Nodes
             for (NodeCommon nodeCommon : extractNodesList(inputProcess.getNodes())) {
                 if(nodeCommon instanceof Node) {
-                    if(outputDiagram.isDisease==null || outputDiagram.isDisease==false){
-                        outputDiagram.nodes.add((Node) nodeCommon);
-                    }else if(outputDiagram.shouldBeIncluded(((Node) nodeCommon).id.intValue())) {
-                        //If it is a disease diagram then only the nodes of the 5 lists are kept
-                        outputDiagram.nodes.add((Node) nodeCommon);
-                    }
+                    outputDiagram.addNode((Node) nodeCommon);
                 }else if(nodeCommon instanceof Note){
-                    outputDiagram.notes.add((Note) nodeCommon);
+                    outputDiagram.addNote((Note) nodeCommon);
                 }else if(nodeCommon instanceof Compartment){
-                    outputDiagram.compartments.add((Compartment) nodeCommon);
+                    outputDiagram.addCompartment((Compartment) nodeCommon);
                 }
             }
 
             //Parse Edges
             for (EdgeCommon edgeCommon : extractEdgesList(inputProcess.getEdges())) {
                 if(edgeCommon instanceof Link){
-                    if(outputDiagram.isDisease==null || outputDiagram.isDisease==false){
-                        outputDiagram.links.add((Link) edgeCommon);
-                    }else if(outputDiagram.shouldBeIncluded(((Link) edgeCommon).id.intValue())) {
-                        //If it is a disease diagram then only the nodes of the 5 lists are kept
-                        outputDiagram.links.add((Link) edgeCommon);
-                    }
+                    outputDiagram.addLink((Link) edgeCommon);
                 }else if(edgeCommon instanceof Edge){
-                    if(outputDiagram.isDisease==null || outputDiagram.isDisease==false){
-                        outputDiagram.edges.add((Edge) edgeCommon);
-                    }else if(outputDiagram.shouldBeIncluded(((Edge) edgeCommon).id.intValue())) {
-                        //If it is a disease diagram then only the nodes of the 5 lists are kept
-                        outputDiagram.edges.add((Edge) edgeCommon);
-                    }
+                    outputDiagram.addEdge((Edge) edgeCommon);
                 }
             }
-
-            //Clean up links - delete those with no inputs/outputs
-            outputDiagram.cleanUpOrphanLinks();
-
-            //Parse Pathways
-            outputDiagram.pathways = inputProcess.getPathways().toString();
 
             //Set universal min max
             outputDiagram.setUniversalBoundaries();
@@ -105,19 +79,10 @@ public abstract class LayoutFactory {
             outputDiagram.setCrossedComponents();
 
             //Set the faded out components
-            outputDiagram.setOverlaidObjects(outputDiagram.notFadeOut);
-
-            //Remove the reactions overlaid by disease reactions
-//            outputDiagram.normalEventsOverlaidByDiseaseEventsCleanup();
+            outputDiagram.setOverlaidObjects();
 
             //Process disease components
             outputDiagram.setDiseaseComponents();
-
-            //Clean up links - delete those with no inputs/outputs
-//            outputDiagram.cleanUpOrphanLinks();
-
-            //Annotate and fix empty or incomplete compartments
-            outputDiagram.fixCompartments();
 
         }
         return outputDiagram;
@@ -165,8 +130,6 @@ public abstract class LayoutFactory {
             for (Serializable item : inputProps.getIsChangedOrDisplayName()) {
                 if(item instanceof String){
                     props.put("displayName", item);
-                }else if(item instanceof Boolean){
-                    props.put("isChanged", item);
                 }
             }
         }
@@ -213,11 +176,10 @@ public abstract class LayoutFactory {
     }
 
     /*
-     * Convert a string of values into a list of integers
-     * 123 45 23 77 90 54
+     * Convert a string of values into a list of longs
      */
-    private static List<Integer> extractIntegerListFromString(String inputString, String separator){
-        List<Integer> outputList = null;
+    private static List<Long> extractListFromString(String inputString, String separator){
+        List<Long> outputList = null;
         if(inputString!=null) {
             //Split inputString using the separator
             String[] tempStrArray = inputString.split(separator);
@@ -226,11 +188,14 @@ public abstract class LayoutFactory {
                 for (String tempStr : tempStrArray) {
                     if (tempStr != null && !tempStr.isEmpty()) {
                         //convert String to Integer
-                        outputList.add(Integer.parseInt(tempStr.trim()));
+                        outputList.add(Long.parseLong(tempStr.trim()));
                     }
                 }//end for every string
             }//end if
         }
         return outputList;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////
+
 }

@@ -1,13 +1,6 @@
 package org.reactome.server.diagram.converter.layout.output;
 
-import org.gk.model.GKInstance;
-import org.gk.model.InstanceUtilities;
-import org.gk.model.ReactomeJavaConstants;
-import org.reactome.core.factory.DatabaseObjectFactory;
-import org.reactome.core.model.CatalystActivity;
-import org.reactome.core.model.EntityFunctionalStatus;
-import org.reactome.core.model.PhysicalEntity;
-import org.reactome.core.model.ReactionlikeEvent;
+import org.reactome.server.diagram.converter.util.MapSet;
 import org.reactome.server.diagram.converter.util.ShapeBuilder;
 
 import java.util.*;
@@ -17,49 +10,183 @@ import java.util.*;
  */
 public class Diagram {
     //DO NOT GET SERIALISED
-    @Deprecated public transient Long reactomeDiagramId;
-    @Deprecated public transient String pathways;
-    @Deprecated public transient Long nextId;
-    @Deprecated public transient Boolean hideCompartmentInName;
-    @Deprecated public transient Boolean isChanged;
-    public transient Boolean isDisease;
-    public transient Set<Integer> normalComponents = new HashSet<>();
-    public transient Set<Integer> crossedComponents = new HashSet<>();
-    public transient Set<Integer> notFadeOut = new HashSet<>();
+    private Boolean isDisease;
+    private Set<Long> normalComponents = new HashSet<>();
+    private Set<Long> crossedComponents = new HashSet<>();
+    private Set<Long> notFadeOut = new HashSet<>();
 
-    public Long dbId;
-    public String stableId;
-    public String displayName;
-    public Boolean forNormalDraw = Boolean.TRUE;
+    private Long dbId;
+    private String stableId;
+    private String displayName;
+    private Boolean forNormalDraw = Boolean.TRUE;
 
-    public Set<Integer> diseaseComponents;
-    public Set<Integer> lofNodes;
+    private Set<Long> diseaseComponents;
+    private Set<Long> lofNodes;
 
-    public List<Node> nodes = new LinkedList<>();
-    public List<Note> notes = new LinkedList<>();
-    public List<Edge> edges = new LinkedList<>();
-    public List<Link> links = new LinkedList<>();
-    public List<Compartment> compartments = new LinkedList<>();
+    private MapSet<Long, Node> nodes = new MapSet<>();
+    private MapSet<Long, Note> notes = new MapSet<>();
+    private MapSet<Long, Edge> edges = new MapSet<>();
+    private MapSet<Long, Link> links = new MapSet<>();
+    private MapSet<Long, Compartment> compartments = new MapSet<>();
 
-    public Integer minX; public Integer maxX;
-    public Integer minY; public Integer maxY;
+    private Integer minX; private Integer maxX;
+    private Integer minY; private Integer maxY;
 
+
+    public void setIsDisease(Boolean isDisease) {
+        this.isDisease = isDisease;
+    }
+
+    public void setNormalComponents(Set<Long> normalComponents) {
+        this.normalComponents = normalComponents;
+    }
+
+    public void setCrossedComponents(Set<Long> crossedComponents) {
+        this.crossedComponents = crossedComponents;
+    }
+
+    public void setNotFadeOut(Set<Long> notFadeOut) {
+        this.notFadeOut = notFadeOut;
+    }
+
+    public Long getDbId() {
+        return dbId;
+    }
+
+    public void setDbId(Long dbId) {
+        this.dbId = dbId;
+    }
+
+    public String getStableId() {
+        return stableId;
+    }
+
+    public void setStableId(String stableId) {
+        this.stableId = stableId;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public Boolean getForNormalDraw() {
+        return forNormalDraw;
+    }
+
+    public void setForNormalDraw(Boolean forNormalDraw) {
+        this.forNormalDraw = forNormalDraw;
+    }
+
+    public Set<Long> getDiseaseComponents() {
+        return diseaseComponents;
+    }
+
+    public void setDiseaseComponents(Set<Long> diseaseComponents) {
+        this.diseaseComponents = diseaseComponents;
+    }
+
+    public Set<Long> getLofNodes() {
+        return lofNodes;
+    }
+
+    public void setLofNodes(Set<Long> lofNodes) {
+        this.lofNodes = lofNodes;
+    }
+
+    public Collection<Node> getNodes() {
+        return nodes.values();
+    }
+
+    public boolean addNode(Node node) {
+        if(isDisease==null || !isDisease || shouldBeIncluded(node.id)){
+            this.nodes.add(node.reactomeId, node);
+            return true;
+        }
+        return false;
+    }
+
+    public Collection<Note> getNotes() {
+        return notes.values();
+    }
+
+    public boolean addNote(Note note) {
+        if(!note.displayName.toLowerCase().equals("note")) {
+            this.notes.add(note.id, note);
+            return true;
+        }
+        return false;
+    }
+
+    public Collection<Edge> getEdges() {
+        return edges.values();
+    }
+
+    public boolean addEdge(Edge edge) {
+        if(isDisease==null || !isDisease || shouldBeIncluded(edge.id)){
+            this.edges.add(edge.reactomeId, edge);
+            return true;
+        }
+        return false;
+    }
+
+    public Collection<Link> getLinks() {
+        return links.values();
+    }
 
     /**
-     * Deletes links that do not have inputs or outputs OR
-     * those that their inputs or outputs have been deleted
-     * because they were not in the normalComponents (Disease Pathways)
+     * Adds a link provided that it has inputs and outputs
      */
-    public void cleanUpOrphanLinks(){
-        List<Link> linksList = new LinkedList<>();
-        for (Link link : links) {
-            //Only keep those links going from an entity to another :)
-            if(     link.inputs!=null && !link.inputs.isEmpty() &&
-                    link.outputs!=null && !link.outputs.isEmpty()) {
-                linksList.add(link);
+    public boolean addLink(Link link) {
+        //noinspection SimplifiableIfStatement
+        if(link.inputs!=null && !link.inputs.isEmpty() && link.outputs!=null && !link.outputs.isEmpty()) {
+            if(isDisease==null || !isDisease || shouldBeIncluded(link.id)){
+                links.add(link.id, link);
+                return true;
             }
         }
-        this.links = linksList;
+        return false;
+    }
+
+    public Collection<Compartment> getCompartments() {
+        return compartments.values();
+    }
+
+    /**
+     * Adds a compartment and fixes any incomplete and empty compartment
+     */
+    public void addCompartment(Compartment compartment) {
+        // IMPORTANT
+        // If schemaClass is missing then set it to "EntityCompartment"
+        if(compartment.schemaClass==null || compartment.schemaClass.isEmpty()){
+            compartment.schemaClass="EntityCompartment";
+        }
+
+        // IMPORTANT
+        // If displayName is missing then set it to "Unidentified Compartment"
+        if(compartment.displayName==null || compartment.displayName.isEmpty()){
+            compartment.displayName="Unidentified Compartment";
+        }
+        this.compartments.add(compartment.reactomeId, compartment);
+    }
+
+    public Integer getMinX() {
+        return minX;
+    }
+
+    public Integer getMaxX() {
+        return maxX;
+    }
+
+     public Integer getMinY() {
+        return minY;
+    }
+
+    public Integer getMaxY() {
+        return maxY;
     }
 
     /**
@@ -71,16 +198,16 @@ public class Diagram {
         //Iterate over all Nodes and edges and find the minX-maxX, minY-maxY
         List<Integer> xx = new LinkedList<>();
         List<Integer> yy = new LinkedList<>();
-        for(Node node : nodes) {
+        for(Node node : nodes.values()) {
             // take x and x + width
             xx.add(node.minX); xx.add(node.maxX);
             yy.add(node.minY); yy.add(node.maxY);
         }
-        for(Edge edge : edges){
+        for(Edge edge : edges.values()){
             xx.add(edge.minX); xx.add(edge.maxX);
             yy.add(edge.minY); yy.add(edge.maxY);
         }
-        for(Compartment compartment : compartments) {
+        for(Compartment compartment : compartments.values()) {
             // take x and x + width
             xx.add(compartment.minX); xx.add(compartment.maxX);
             yy.add(compartment.minY); yy.add(compartment.maxY);
@@ -104,7 +231,7 @@ public class Diagram {
     public void setBackboneArrows(){
         if(edges == null) return;
 
-        for (Edge edge : edges) {
+        for (Edge edge : edges.values()) {
 
             if(edge.outputs == null ) continue;
 
@@ -127,7 +254,7 @@ public class Diagram {
 
     public void setLinkArrows(){
         if(links == null) return;
-        for (Link link : links) {
+        for (Link link : links.values()) {
             if(link.renderableClass.equals("FlowLine")){
                 if(link.outputs == null ) return;
                 // Use the last segment of the backbone
@@ -166,12 +293,12 @@ public class Diagram {
 
         // generate a map of all nodes
         HashMap<Long, Node> nodesMap = new HashMap<>();
-        for (NodeCommon node : nodes) {
+        for (NodeCommon node : nodes.values()) {
             nodesMap.put(node.id, (Node) node);
         }
 
         // iterate over all Edges and ReactionParts and then create the connectors
-        for (Edge edge : edges) {
+        for (Edge edge : edges.values()) {
             createAndAddConnector(nodesMap, edge.inputs, edge, Connector.Type.INPUT);
             createAndAddConnector(nodesMap, edge.outputs, edge, Connector.Type.OUTPUT);
             createAndAddConnector(nodesMap, edge.catalysts, edge, Connector.Type.CATALYST);
@@ -182,7 +309,7 @@ public class Diagram {
 
     public void setNodesBoundaries(){
         //Once the nodes connectors setup is finished, the boundaries need to be set
-        for (Node node : nodes) {
+        for (Node node : nodes.values()) {
             node.setBoundaries();
         }
     }
@@ -195,8 +322,8 @@ public class Diagram {
             if(nodes==null || nodes.isEmpty()){
                 throw new RuntimeException("The nodes have not been initialised yet");
             }
-            for (Node node : nodes) {
-                if (crossedComponents.contains(node.id.intValue())) {
+            for (Node node : nodes.values()) {
+                if (crossedComponents.contains(node.id)) {
                     node.isCrossed = Boolean.TRUE;
                 }
             }
@@ -214,39 +341,39 @@ public class Diagram {
                 throw new RuntimeException("The edges have not been initialised yet");
             }
 
-            for (Node node : nodes) {
-                if (diseaseComponents.contains(node.id.intValue())) {
+            for (Node node : nodes.values()) {
+                if (diseaseComponents.contains(node.id)) {
                     node.isFadeOut = null;
                 }
                 if(node.connectors!=null){
                     for (Connector connector : node.connectors) {
-                        if(diseaseComponents.contains(connector.edgeId.intValue())){
+                        if(diseaseComponents.contains(connector.edgeId)){
                             connector.isFadeOut = null;
                         }
                     }
                 }
             }
 
-            for(Edge edge : edges) {
-                if (diseaseComponents.contains(edge.id.intValue())) {
+            for(Edge edge : edges.values()) {
+                if (diseaseComponents.contains(edge.id)) {
                     edge.isFadeOut = null;
                 }
             }
         }
     }
 
-    public void setOverlaidObjects(Set<Integer> shown){
-        if(shown!=null && !shown.isEmpty()) {
+    public void setOverlaidObjects(){
+        if(notFadeOut!=null && !notFadeOut.isEmpty()) {
             if(nodes==null || nodes.isEmpty()){
                 throw new RuntimeException("The nodes have not been initialised yet");
             }
-            for (Node node : nodes) {
-                if (!shown.contains(node.id.intValue())) {
+            for (Node node : nodes.values()) {
+                if (!notFadeOut.contains(node.id)) {
                     node.isFadeOut = Boolean.TRUE;
                 }
                 if(node.connectors!=null){
                     for (Connector connector : node.connectors) {
-                        if(!shown.contains(connector.edgeId.intValue())){
+                        if(!notFadeOut.contains(connector.edgeId)){
                             connector.isFadeOut = Boolean.TRUE;
                         }
                     }
@@ -256,14 +383,14 @@ public class Diagram {
             if(edges==null || edges.isEmpty()){
                 throw new RuntimeException("The edges have not been initialised yet");
             }
-            for (Edge edge : edges) {
-                if (!shown.contains(edge.id.intValue())){
+            for (Edge edge : edges.values()) {
+                if (!notFadeOut.contains(edge.id)){
                     edge.isFadeOut = Boolean.TRUE;
                 }
             }
 
             if(links!=null){
-                for (Link link : links) {
+                for (Link link : links.values()) {
                     link.isFadeOut = Boolean.TRUE;
                 }
             }
@@ -281,160 +408,16 @@ public class Diagram {
         }
     }
 
-    /**
-     * Identify and remove the normal counterparts of any disease reaction
-     */
-    public void normalEventsOverlaidByDiseaseEventsCleanup(){
-        Set<Node> nodesToBeKept = new HashSet<>();
-        Set<Long> reactionsToBeDeleted = new HashSet<>();
-        //Find the disease reactions and identify the normal counterparts
-        for (GKInstance event : InstanceUtilities.getContainedEvents(DatabaseObjectFactory.fetchInstance(dbId))) {
-            if(event.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent)){
-                ReactionlikeEvent rle = DatabaseObjectFactory.getDatabaseObject(event).load();
-                List<ReactionlikeEvent> normalEvents = rle.getNormalReaction();
-                if(normalEvents!=null && !normalEvents.isEmpty()){
-                    //Here we can assume rle is a disease reaction ;)
-                    //Identify the normal counterpart and its participants in order to remove them
-                    List<PhysicalEntity> catalysts = getCatalystActivityPEs(rle.getCatalystActivity());
-                    List<PhysicalEntity> functionalStatus = getFunctionalStatusPEs(rle.getEntityFunctionalStatus());
-                    nodesToBeKept.addAll(getNodesToBeKept(rle.getInput()));
-                    nodesToBeKept.addAll(getNodesToBeKept(rle.getOutput()));
-                    nodesToBeKept.addAll(getNodesToBeKept(catalysts));
-                    nodesToBeKept.addAll(getNodesToBeKept(functionalStatus));
-                    for (ReactionlikeEvent normalEvent : normalEvents) {
-                        reactionsToBeDeleted.add(normalEvent.getDbId());
-                    }
-                }
-            }
-        }
 
-        Set<Long> entitiesToBeDeleted = new HashSet<>();
-        Set<Long> edgesToBeDeleted = new HashSet<>();
-        Set<Edge> edgesToBeKept = new HashSet<>();
-        for (Edge edge : edges) {
-            if(!reactionsToBeDeleted.contains(edge.reactomeId)){
-                edgesToBeKept.add(edge);
-            }else{
-                // Remove only those edges and nodes that are not in
-                // the overlaidComponents and crossedComponents lists
-                edgesToBeDeleted.add(edge.id);
-                entitiesToBeDeleted.addAll(getEntitiesToDelete(edge.inputs));
-                entitiesToBeDeleted.addAll(getEntitiesToDelete(edge.outputs));
-                entitiesToBeDeleted.addAll(getEntitiesToDelete(edge.catalysts));
-                entitiesToBeDeleted.addAll(getEntitiesToDelete(edge.activators));
-                entitiesToBeDeleted.addAll(getEntitiesToDelete(edge.inhibitors));
-            }
-        }
-        edges = new LinkedList<>(edgesToBeKept);
-
-        for (Node node : nodes) {
-            if(!entitiesToBeDeleted.contains(node.id)) {
-                nodesToBeKept.add(node);
-            }
-            //There might have connectors belonging to deleted edges
-            if (node.connectors != null) {
-                List<Connector> keepConnectorsSafe = new LinkedList<>();
-                for (Connector connector : node.connectors) {
-                    if (!edgesToBeDeleted.contains(connector.edgeId)) {
-                        keepConnectorsSafe.add(connector);
-                    }
-                }
-                node.connectors = keepConnectorsSafe;
-            }
-        }
-        nodes = new LinkedList<>(nodesToBeKept);
-    }
-
-    /**
-     * Fixes incomplete and empty compartments
-     */
-    public void fixCompartments() {
-        if (compartments == null || compartments.isEmpty()){
-            return;
-        }
-        for (Compartment compartment : compartments) {
-            // IMPORTANT
-            // If schemaClass is missing then set it to "EntityCompartment"
-            if(compartment.schemaClass==null || compartment.schemaClass.isEmpty()){
-                compartment.schemaClass="EntityCompartment";
-            }
-
-            // IMPORTANT
-            // If displayName is missing then set it to "Unidentified Compartment"
-            if(compartment.displayName==null || compartment.displayName.isEmpty()){
-                compartment.schemaClass="Unidentified Compartment";
-            }
-        }
-
-    }
-
-    /**
-     * Return diagram entities that are NOT in the overlaidComponents(notFadedOut) list and
-     * NOT in the crossedComponents list
-     */
-    private List<Long> getEntitiesToDelete(List<ReactionPart> participants){
-        List<Long> rtn = new LinkedList<>();
-        if(participants!=null){
-            for (ReactionPart participant : participants) {
-                if (
-                        (crossedComponents==null || !crossedComponents.contains(participant.id.intValue())) &&
-                        (notFadeOut==null || !notFadeOut.contains(participant.id.intValue()))
-                   ){
-                    rtn.add(participant.id);
-                }
-            }
-        }
-        return rtn;
-    }
-
-    private List<Node> getNodesToBeKept(List<PhysicalEntity> participants){
-        List<Node> rtn = new LinkedList<>();
-        if(participants!=null) {
-            for (PhysicalEntity entity : participants) {
-                for (Node node : nodes) {
-                    if (node.reactomeId.equals(entity.getDbId())) {
-                        rtn.add(node);
-                    }
-                }
-            }
-        }
-        return rtn;
-    }
-
-    private List<PhysicalEntity> getCatalystActivityPEs(List<CatalystActivity> catalystActivities){
-        List<PhysicalEntity> rtn = new LinkedList<>();
-        if(catalystActivities!=null) {
-            for (CatalystActivity catalystActivity : catalystActivities) {
-                catalystActivity.load();
-                rtn.add(catalystActivity.getPhysicalEntity());
-            }
-        }
-        return rtn;
-    }
-
-    private List<PhysicalEntity> getFunctionalStatusPEs(List<EntityFunctionalStatus> efss){
-        List<PhysicalEntity> rtn = new LinkedList<>();
-        if(efss!=null) {
-            for (EntityFunctionalStatus efs : efss) {
-                efs.load();
-                rtn.add(efs.getPhysicalEntity());
-            }
-        }
-        return rtn;
-    }
 
     /**
      * Checks if the particular diagram object is in any of the 5 lists (disease diagrams)
      */
-    public boolean shouldBeIncluded(Integer diagramId){
-        if(     (normalComponents!=null && normalComponents.contains(diagramId))   ||
-                (crossedComponents!=null && crossedComponents.contains(diagramId)) ||
-                (diseaseComponents!=null && diseaseComponents.contains(diagramId)) ||
-                (lofNodes!=null && lofNodes.contains(diagramId))                   ||
-                (notFadeOut!=null && notFadeOut.contains(diagramId))               ){
-            return true;
-        }else{
-            return false;
-        }
+    private boolean shouldBeIncluded(Long diagramId){
+        return (normalComponents != null && normalComponents.contains(diagramId)) ||
+                (crossedComponents != null && crossedComponents.contains(diagramId)) ||
+                (diseaseComponents != null && diseaseComponents.contains(diagramId)) ||
+                (lofNodes != null && lofNodes.contains(diagramId)) ||
+                (notFadeOut != null && notFadeOut.contains(diagramId));
     }
 }

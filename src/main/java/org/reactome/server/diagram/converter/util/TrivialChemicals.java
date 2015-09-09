@@ -23,9 +23,9 @@ public class TrivialChemicals {
     }
 
     public Diagram annotateTrivialChemicals(Diagram diagram, Map<Long, PhysicalEntityNode> physicalEntitiesMap){
-        if(diagram.nodes==null)
+        if(diagram.getNodes()==null)
             return diagram;
-        for (Node node : diagram.nodes) {
+        for (Node node : diagram.getNodes()) {
             if(node.reactomeId!=null){
                 PhysicalEntityNode pe  = physicalEntitiesMap.get(node.reactomeId);
                 if(pe==null) {
