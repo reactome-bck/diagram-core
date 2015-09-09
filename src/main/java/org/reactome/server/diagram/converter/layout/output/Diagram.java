@@ -40,10 +40,12 @@ public class Diagram {
     private Integer minY; private Integer maxY;
 
     public void createShadows(Collection<SubpathwayNode> subpathways){
+        if(subpathways!=null)
         for (SubpathwayNode subpathway : subpathways) {
             List<DiagramObject> participants = new ArrayList<>();
             for (Long event : subpathway.events) {
                 Set<Edge> edges = this.edges.getElements(event);
+                if(edges==null) continue; // For subpathways pointing to a process node (encapsulated pathway)
                 participants.addAll(edges);
                 for (Edge edge : edges) {
                     if(edge.inputs!=null)
@@ -72,7 +74,11 @@ public class Diagram {
                     }
                 }
             }
-            shadows.add(new Shadow(subpathway, participants, getUniqueId()));
+            if(participants.isEmpty()){
+                System.err.println("Houston! we have a problem with >> " + stableId + ": " + displayName);
+            }else {
+                shadows.add(new Shadow(subpathway, participants, getUniqueId()));
+            }
         }
     }
 
