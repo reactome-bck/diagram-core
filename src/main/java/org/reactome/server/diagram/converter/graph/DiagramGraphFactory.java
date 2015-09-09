@@ -198,6 +198,7 @@ public class DiagramGraphFactory {
                     GKInstance event = (GKInstance) aux;
                     if(event.getSchemClass().isa(ReactomeJavaConstants.Pathway)){
                         subpathways.add(event);
+                        subpathways.addAll(getSubpathways(event));
                     }
                 }
             }
