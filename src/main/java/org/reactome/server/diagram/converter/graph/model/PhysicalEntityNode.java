@@ -119,9 +119,10 @@ public class PhysicalEntityNode {
             GKInstance stableIdentifier = (GKInstance) physicalEntity.getAttributeValue(ReactomeJavaConstants.stableIdentifier);
             this.stId = (String) stableIdentifier.getAttributeValue(ReactomeJavaConstants.identifier);
         } catch (Exception e) {
+            this.stId = "R-GHOST-" + physicalEntity.getDBID();
             // Important
             // This is because the stable identifiers are not working properly
-            logger.error("Error setting stable Identifier for " + this.toString() + e.getStackTrace());
+            logger.warn("Error setting stable Identifier for " +  physicalEntity.getDBID());
         }
     }
 

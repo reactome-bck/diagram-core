@@ -55,16 +55,7 @@ public class Diagram {
         for (Link link : links) {
             //Only keep those links going from an entity to another :)
             if(     link.inputs!=null && !link.inputs.isEmpty() &&
-                    link.outputs!=null && !link.outputs.isEmpty())
-            {
-                //Only keep those links going from/to entities that haven't been removed (Disease Pathways) :)
-                if(isDisease!=null && isDisease==true) {
-                    Integer inputId = link.inputs.get(0).id.intValue();
-                    Integer outputId = link.outputs.get(0).id.intValue();
-                    if (!nodes.contains(inputId) || !nodes.contains(outputId)) {
-                        continue;
-                    }
-                }
+                    link.outputs!=null && !link.outputs.isEmpty()) {
                 linksList.add(link);
             }
         }
