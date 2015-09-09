@@ -251,15 +251,13 @@ public abstract class DiagramObject {
 
         DiagramObject that = (DiagramObject) o;
 
-        return !(id != null ? !id.equals(that.id) : that.id != null) && !(reactomeId != null ? !reactomeId.equals(that.reactomeId) : that.reactomeId != null);
+        return !(id != null ? !id.equals(that.id) : that.id != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (reactomeId != null ? reactomeId.hashCode() : 0);
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
