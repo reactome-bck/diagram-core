@@ -184,6 +184,8 @@ public class Convertor2JsonTool {
         if(diagram!=null) {
             Graph graph = graphFactory.getGraph(diagram);
             JsonWriter.serialiseGraph(graph, outputDir);
+
+            diagram.createShadows(graph.getSubpathways());
             diagram = trivialChemicals.annotateTrivialChemicals(diagram, graphFactory.getPhysicalEntityMap());
             JsonWriter.serialiseDiagram(diagram, outputDir);
             return true;

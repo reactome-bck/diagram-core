@@ -48,12 +48,12 @@ public class Connector {
         setPointer(edge, segments, type);
     }
 
-    private void setSegments(List<Position> positions){
-        if(positions==null) return;
-        Position from = positions.get(0);
-        Position to;
-        for (int i = 1; i < positions.size(); i++) {
-            to = positions.get(i);
+    private void setSegments(List<Coordinate> coordinates){
+        if(coordinates ==null) return;
+        Coordinate from = coordinates.get(0);
+        Coordinate to;
+        for (int i = 1; i < coordinates.size(); i++) {
+            to = coordinates.get(i);
             Segment segment = new Segment(from, to);
             if(!segment.isPoint()) {
                 segments.add(segment);
@@ -122,18 +122,18 @@ public class Connector {
     /**
      * Calculate the position of Stoichiometry box on the segments.
      */
-    private Position setStoichiometryPosition(Position from, Position to){
+    private Coordinate setStoichiometryPosition(Coordinate from, Coordinate to){
         Double x = (from.x + to.x)/2.0d;
         Double y = (from.y + to.y)/2.0d;
 
-        return new Position(x.intValue(), y.intValue() );
+        return new Coordinate(x.intValue(), y.intValue() );
     }
 
     private void setPointer(Edge edge, List<Segment> segments, Type connectorType){
 
         if(segments.size()>0){
             Segment segment = null;
-            List<Position> points = null;
+            List<Coordinate> points = null;
             switch (connectorType){
                 case INPUT:
                     return;
@@ -154,7 +154,7 @@ public class Connector {
                     segment = segments.get(segments.size() - 1);
                     // Adjust the position of the segment to have a distance from the reaction position
                     Integer radius = Math.round((float) (ShapeBuilder.EDGE_MODULATION_WIDGET_WIDTH / 2.0d));
-                    Position centre =  calculateEndpoint(segment, getDistanceForEndpoind(type));
+                    Coordinate centre =  calculateEndpoint(segment, getDistanceForEndpoind(type));
                     segment.to  =  calculateEndpoint(segment, getDistanceForEndpoint(type, radius));
                     // Shape is an empty circle
                     this.endShape = new Shape(null, null, centre, radius, Boolean.TRUE, Shape.Type.CIRCLE);
@@ -195,7 +195,7 @@ public class Connector {
      * @param dist
      * @return
      */
-    public Position calculateEndpoint(Segment segment, double dist){
+    public Coordinate calculateEndpoint(Segment segment, double dist){
         // Point used to calculate the angle of the segment
         double controlX = segment.from.x;
         double controlY = segment.from.y;
@@ -211,7 +211,7 @@ public class Connector {
         double x = oldX + dist * Math.cos(theta);
         double y = oldY + dist * Math.sin(theta);
 
-        return new Position(new Integer(Math.round((float) x )), new Integer(Math.round((float) y )));
+        return new Coordinate(new Integer(Math.round((float) x )), new Integer(Math.round((float) y )));
     }
 
     private double getDistanceForEndpoind(Type connectRole) {

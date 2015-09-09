@@ -1,6 +1,6 @@
 package org.reactome.server.diagram.converter.util;
 
-import org.reactome.server.diagram.converter.layout.output.Position;
+import org.reactome.server.diagram.converter.layout.output.Coordinate;
 import org.reactome.server.diagram.converter.layout.output.Shape;
 
 import java.awt.*;
@@ -24,7 +24,7 @@ public abstract class ShapeBuilder {
     public static double GENE_SYMBOL_PAD = 4;
     public static double GENE_SYMBOL_WIDTH = 50;
 
-    public static List<Position> createArrow(
+    public static List<Coordinate> createArrow(
             double arrowPositionX,
             double arrowPositionY,
             double controlX,
@@ -36,7 +36,7 @@ public abstract class ShapeBuilder {
         double arrowLength = ARROW_LENGTH;
         double arrowAngle = ARROW_ANGLE;
 
-        List<Position> rtn = new LinkedList<Position>();
+        List<Coordinate> rtn = new LinkedList<Coordinate>();
 
         // Get the angle of the line segment
         double alpha = Math.atan( (double) (arrowPositionY - controlY) / (arrowPositionX - controlX) );
@@ -45,24 +45,24 @@ public abstract class ShapeBuilder {
         double angle = arrowAngle - alpha;
         float x1 = (float)(arrowPositionX - arrowLength * Math.cos(angle));
         float y1 = (float)(arrowPositionY + arrowLength * Math.sin(angle));
-        rtn.add( new Position(Math.round(x1), Math.round(y1)));
+        rtn.add( new Coordinate(Math.round(x1), Math.round(y1)));
         // The tip of the arrow is the end of the segment
-        rtn.add( new Position(Math.round((float)arrowPositionX), Math.round((float)arrowPositionY)));
+        rtn.add( new Coordinate(Math.round((float)arrowPositionX), Math.round((float)arrowPositionY)));
 
         angle = arrowAngle + alpha;
         float x2 = (float)(arrowPositionX - arrowLength * Math.cos(angle));
         float y2 = (float)(arrowPositionY - arrowLength * Math.sin(angle));
-        rtn.add( new Position(Math.round( x2), Math.round( y2)));
+        rtn.add( new Coordinate(Math.round( x2), Math.round( y2)));
         return rtn;
     }
 
-    public static List<Position> createStop(
+    public static List<Coordinate> createStop(
             double anchorX,
             double anchorY,
             double controlX,
             double controlY){
 
-        List<Position> rtn = new LinkedList<Position>();
+        List<Coordinate> rtn = new LinkedList<Coordinate>();
 
         double deltaY = anchorY - controlY;
         double deltaX = controlX - anchorX;
@@ -73,19 +73,19 @@ public abstract class ShapeBuilder {
         double y1 = anchorY + (Math.sin(angle) * EDGE_MODULATION_WIDGET_WIDTH / 2.0d);
         double y2 = anchorY - (Math.sin(angle) * EDGE_MODULATION_WIDGET_WIDTH / 2.0d);
 
-        rtn.add( new Position(Math.round((float)x1), Math.round( (float)y1)));
-        rtn.add( new Position(Math.round((float)x2), Math.round( (float)y2)));
-        rtn.add( new Position(Math.round((float)anchorX), Math.round( (float)anchorY)));
+        rtn.add( new Coordinate(Math.round((float)x1), Math.round( (float)y1)));
+        rtn.add( new Coordinate(Math.round((float)x2), Math.round( (float)y2)));
+        rtn.add( new Coordinate(Math.round((float)anchorX), Math.round( (float)anchorY)));
 
         return rtn;
     }
 
-    public static Shape createReactionBox(Position boxCentre, String symbol){
-        Position topLeft = new Position(
+    public static Shape createReactionBox(Coordinate boxCentre, String symbol){
+        Coordinate topLeft = new Coordinate(
                 Math.round( (float) (boxCentre.x - EDGE_TYPE_WIDGET_WIDTH / 2.0)),
                 Math.round( (float) (boxCentre.y - EDGE_TYPE_WIDGET_WIDTH / 2.0))
         );
-        Position bottomRight = new Position(
+        Coordinate bottomRight = new Coordinate(
                 Math.round( (float) (topLeft.x + EDGE_TYPE_WIDGET_WIDTH)),
                 Math.round( (float) (topLeft.y + EDGE_TYPE_WIDGET_WIDTH))
         );
@@ -94,27 +94,27 @@ public abstract class ShapeBuilder {
         return rtn;
     }
 
-    public static Shape createReactionCircle(Position centre) {
+    public static Shape createReactionCircle(Coordinate centre) {
         Integer radius = Math.round( (float) (EDGE_TYPE_WIDGET_WIDTH / 2.0d - CIRCLE_WIDGET_CORRECTION) );
         return new Shape(null, null, centre, radius, Boolean.FALSE, Shape.Type.CIRCLE);
     }
 
-    public static Shape createReactionDoubleCircle(Position centre) {
+    public static Shape createReactionDoubleCircle(Coordinate centre) {
         Integer radius = Math.round( (float) (EDGE_TYPE_WIDGET_WIDTH / 2.0d - CIRCLE_WIDGET_CORRECTION) );
         Shape rtn = new Shape(null, null, centre, radius, Boolean.TRUE, Shape.Type.DOUBLE_CIRCLE);
         rtn.r1 = Math.round( (float) (ShapeBuilder.EDGE_TYPE_WIDGET_WIDTH / 2.0d - 2 - CIRCLE_WIDGET_CORRECTION) );
         return rtn;
     }
 
-    public static Shape createStoichiometryBox(Position boxCentre, String symbol){
+    public static Shape createStoichiometryBox(Coordinate boxCentre, String symbol){
         double width = -1;
         if(symbol!=null) { width = measureText(symbol).getWidth(); }
         if(width<EDGE_TYPE_WIDGET_WIDTH){ width = EDGE_TYPE_WIDGET_WIDTH; }
-        Position topLeft = new Position(
+        Coordinate topLeft = new Coordinate(
                 Math.round( (float) (boxCentre.x - width / 2.0)),
                 Math.round( (float) (boxCentre.y - width / 2.0))
         );
-        Position bottomRight = new Position(
+        Coordinate bottomRight = new Coordinate(
                 Math.round( (float) (topLeft.x + width)),
                 Math.round( (float) (topLeft.y + width))
         );
@@ -122,15 +122,15 @@ public abstract class ShapeBuilder {
         return rtn;
     }
 
-    public static Shape createNodeAttachmentBox(Position boxCentre, String label){
+    public static Shape createNodeAttachmentBox(Coordinate boxCentre, String label){
         double width = -1;
         if(label!=null) { width = measureText(label).getWidth(); }
         if(width<EDGE_TYPE_WIDGET_WIDTH){ width = EDGE_TYPE_WIDGET_WIDTH; }
-        Position topLeft = new Position(
+        Coordinate topLeft = new Coordinate(
                 Math.round( (float) (boxCentre.x - width / 2.0)),
                 Math.round( (float) (boxCentre.y - width / 2.0))
         );
-        Position bottomRight = new Position(
+        Coordinate bottomRight = new Coordinate(
                 Math.round( (float) (topLeft.x + width)),
                 Math.round( (float) (topLeft.y + width))
         );

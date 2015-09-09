@@ -25,7 +25,7 @@ public abstract class DiagramObject {
     public String schemaClass;
     public String renderableClass;
 
-    public Position position;
+    public Coordinate position;
 
     @Deprecated
     public transient Float lineWidth;
@@ -127,10 +127,10 @@ public abstract class DiagramObject {
      * "," here is tha external separator
      * " " here is the internal separator
      */
-    public static List<Position> extractIntegerPairsListFromString(String inputString,
+    public static List<Coordinate> extractIntegerPairsListFromString(String inputString,
                                                                        String externalSeparator,
                                                                        String internalSeparator){
-        List<Position> outputList = null;
+        List<Coordinate> outputList = null;
         if(inputString!=null) {
             //Split inputString using the external separator
             String[] tempPairsStrArray = inputString.split(externalSeparator);
@@ -147,7 +147,7 @@ public abstract class DiagramObject {
                                 //convert String to Integer
                                 innerList.add( Integer.parseInt(tempSinleValueStr.trim() ) );
                             }
-                            outputList.add(new Position(innerList));
+                            outputList.add(new Coordinate(innerList));
                         }
                     }
                 }
@@ -156,13 +156,13 @@ public abstract class DiagramObject {
         return outputList;
     }
 
-    public static List<Segment> getSegments(List<Position> inputPositions){
+    public static List<Segment> getSegments(List<Coordinate> inputCoordinates){
         List<Segment> rtn = new LinkedList<>();
 
-        Position from = inputPositions.get(0);
-        Position to;
-        for (int i = 1; i < inputPositions.size(); i++) {
-            to = inputPositions.get(i);
+        Coordinate from = inputCoordinates.get(0);
+        Coordinate to;
+        for (int i = 1; i < inputCoordinates.size(); i++) {
+            to = inputCoordinates.get(i);
             Segment segment = new Segment(from, to);
             if(!segment.isPoint()) {
                 rtn.add(segment);
@@ -200,9 +200,9 @@ public abstract class DiagramObject {
     /*
      * Convert a string of values into a Position
      */
-    public static Position extractPositionFromString(String inputString, String separator){
+    public static Coordinate extractPositionFromString(String inputString, String separator){
         List<Integer> outputList = extractIntegerListFromString(inputString, separator);
-        if(outputList!=null) return new Position(outputList);
+        if(outputList!=null) return new Coordinate(outputList);
         return null;
     }
 

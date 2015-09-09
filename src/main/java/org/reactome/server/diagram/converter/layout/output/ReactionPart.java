@@ -9,7 +9,7 @@ import java.util.List;
 public class ReactionPart {
 
     public Long id;
-    public List<Position> points;
+    public List<Coordinate> points;
     public Integer stoichiometry;
 
     public ReactionPart(Object obj) {

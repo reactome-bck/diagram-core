@@ -18,7 +18,7 @@ public class EdgeCommon extends DiagramObject {
     public String interactionType;
 
     public List<Segment> segments;
-    public List<Position> points;
+    public List<Coordinate> points;
     public Shape endShape;
     public Shape reactionShape;
 
@@ -76,7 +76,7 @@ public class EdgeCommon extends DiagramObject {
     private void setBoundaries(){
         List<Integer> xx = new LinkedList<>();
         List<Integer> yy = new LinkedList<>();
-        for (Position point : points) {
+        for (Coordinate point : points) {
             xx.add(point.x);
             yy.add(point.y);
         }

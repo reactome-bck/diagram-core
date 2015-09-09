@@ -9,7 +9,7 @@ import java.util.List;
 public abstract class NodeCommon extends DiagramObject {
 
     public NodeProperties prop = new NodeProperties();
-    public Position textPosition;
+    public Coordinate textPosition;
     public Bound insets;
 
     public Color bgColor;

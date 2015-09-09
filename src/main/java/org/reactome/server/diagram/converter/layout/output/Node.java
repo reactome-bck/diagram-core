@@ -151,7 +151,7 @@ public class Node extends NodeCommon {
     private void setEndShape(){
         if(this.renderableClass.equals("Gene")){
             // Calculate the arrow shape of the Gene
-            List<Position> points = ShapeBuilder.createArrow(
+            List<Coordinate> points = ShapeBuilder.createArrow(
                     this.prop.x + this.prop.width,
                     this.prop.y+2,
                     this.prop.x + this.prop.width + ShapeBuilder.ARROW_LENGTH,

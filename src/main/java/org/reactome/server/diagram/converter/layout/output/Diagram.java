@@ -1,5 +1,6 @@
 package org.reactome.server.diagram.converter.layout.output;
 
+import org.reactome.server.diagram.converter.graph.output.SubpathwayNode;
 import org.reactome.server.diagram.converter.util.MapSet;
 import org.reactome.server.diagram.converter.util.ShapeBuilder;
 
@@ -19,19 +20,61 @@ public class Diagram {
     private String stableId;
     private String displayName;
     private Boolean forNormalDraw = Boolean.TRUE;
+    private Long lastId = 0L;
 
     private Set<Long> diseaseComponents;
     private Set<Long> lofNodes;
 
+    private Map<Long, DiagramObject> objectMap = new HashMap<>();
+
     private MapSet<Long, Node> nodes = new MapSet<>();
-    private MapSet<Long, Note> notes = new MapSet<>();
     private MapSet<Long, Edge> edges = new MapSet<>();
-    private MapSet<Long, Link> links = new MapSet<>();
     private MapSet<Long, Compartment> compartments = new MapSet<>();
+
+    private Map<Long, Note> notes = new HashMap<>();
+    private Map<Long, Link> links = new HashMap<>();
+
+    private Set<Shadow> shadows = new HashSet<>();
 
     private Integer minX; private Integer maxX;
     private Integer minY; private Integer maxY;
 
+    public void createShadows(Collection<SubpathwayNode> subpathways){
+        for (SubpathwayNode subpathway : subpathways) {
+            List<DiagramObject> participants = new ArrayList<>();
+            for (Long event : subpathway.events) {
+                Set<Edge> edges = this.edges.getElements(event);
+                participants.addAll(edges);
+                for (Edge edge : edges) {
+                    if(edge.inputs!=null)
+                    for (ReactionPart part : edge.inputs) {
+                        participants.add(this.objectMap.get(part.id));
+                    }
+
+                    if(edge.outputs!=null)
+                    for (ReactionPart part : edge.outputs) {
+                        participants.add(this.objectMap.get(part.id));
+                    }
+
+                    if(edge.catalysts!=null)
+                    for (ReactionPart part : edge.catalysts) {
+                        participants.add(this.objectMap.get(part.id));
+                    }
+
+                    if(edge.activators!=null)
+                    for (ReactionPart part : edge.activators) {
+                        participants.add(this.objectMap.get(part.id));
+                    }
+
+                    if(edge.inhibitors!=null)
+                    for (ReactionPart part : edge.inhibitors) {
+                        participants.add(this.objectMap.get(part.id));
+                    }
+                }
+            }
+            shadows.add(new Shadow(subpathway, participants, getUniqueId()));
+        }
+    }
 
     public void setIsDisease(Boolean isDisease) {
         this.isDisease = isDisease;
@@ -104,6 +147,8 @@ public class Diagram {
     public boolean addNode(Node node) {
         if(isDisease==null || !isDisease || shouldBeIncluded(node.id)){
             this.nodes.add(node.reactomeId, node);
+            this.objectMap.put(node.id, node);
+            setLastId(node);
             return true;
         }
         return false;
@@ -115,7 +160,9 @@ public class Diagram {
 
     public boolean addNote(Note note) {
         if(!note.displayName.toLowerCase().equals("note")) {
-            this.notes.add(note.id, note);
+            this.notes.put(note.id, note);
+            this.objectMap.put(note.id, note);
+            setLastId(note);
             return true;
         }
         return false;
@@ -128,6 +175,8 @@ public class Diagram {
     public boolean addEdge(Edge edge) {
         if(isDisease==null || !isDisease || shouldBeIncluded(edge.id)){
             this.edges.add(edge.reactomeId, edge);
+            this.objectMap.put(edge.id, edge);
+            setLastId(edge);
             return true;
         }
         return false;
@@ -144,7 +193,9 @@ public class Diagram {
         //noinspection SimplifiableIfStatement
         if(link.inputs!=null && !link.inputs.isEmpty() && link.outputs!=null && !link.outputs.isEmpty()) {
             if(isDisease==null || !isDisease || shouldBeIncluded(link.id)){
-                links.add(link.id, link);
+                links.put(link.id, link);
+                this.objectMap.put(link.id, link);
+                setLastId(link);
                 return true;
             }
         }
@@ -153,6 +204,10 @@ public class Diagram {
 
     public Collection<Compartment> getCompartments() {
         return compartments.values();
+    }
+
+    public Set<Shadow> getShadows() {
+        return shadows;
     }
 
     /**
@@ -171,6 +226,8 @@ public class Diagram {
             compartment.displayName="Unidentified Compartment";
         }
         this.compartments.add(compartment.reactomeId, compartment);
+        this.objectMap.put(compartment.id, compartment);
+        setLastId(compartment);
     }
 
     public Integer getMinX() {
@@ -240,7 +297,7 @@ public class Diagram {
                     // Use the last segment of the backbone
                     // IMPORTANT!!! Segments here start from the centre of the backbone and point to the output node
                     Segment segment = edge.segments.get(edge.segments.size() -1);
-                    List<Position> points = ShapeBuilder.createArrow(
+                    List<Coordinate> points = ShapeBuilder.createArrow(
                             segment.to.x,
                             segment.to.y,
                             segment.from.x,
@@ -260,7 +317,7 @@ public class Diagram {
                 // Use the last segment of the backbone
                 // IMPORTANT!!! Segments here start from the centre of the backbone and point to the output node
                 Segment segment = link.segments.get(link.segments.size() -1);
-                List<Position> points = ShapeBuilder.createArrow(
+                List<Coordinate> points = ShapeBuilder.createArrow(
                         segment.to.x,
                         segment.to.y,
                         segment.from.x,
@@ -272,7 +329,7 @@ public class Diagram {
                 // Use the last segment of the backbone
                 // IMPORTANT!!! Segments here start from the centre of the backbone and point to the output node
                 Segment segment = link.segments.get(link.segments.size() -1);
-                List<Position> points = ShapeBuilder.createArrow(
+                List<Coordinate> points = ShapeBuilder.createArrow(
                         segment.to.x,
                         segment.to.y,
                         segment.from.x,
@@ -395,6 +452,14 @@ public class Diagram {
                 }
             }
         }
+    }
+
+    private void setLastId(DiagramObject item){
+        if(item.id>this.lastId) this.lastId = item.id;
+    }
+
+    private Long getUniqueId(){
+        return ++this.lastId;
     }
 
     private void createAndAddConnector(HashMap<Long, Node> nodesMap, List<ReactionPart> reactionPartList, Edge edge, Connector.Type type){

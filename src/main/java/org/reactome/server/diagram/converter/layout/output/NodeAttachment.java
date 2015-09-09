@@ -33,7 +33,7 @@ public class NodeAttachment {
         }
         this.renderableClass = obj.getClass().getSimpleName();
 
-        Position boxCentre = new Position(
+        Coordinate boxCentre = new Coordinate(
                 Math.round( node.prop.x + node.prop.width * relativeX ),
                 Math.round( node.prop.y + node.prop.height * relativeY )
         );

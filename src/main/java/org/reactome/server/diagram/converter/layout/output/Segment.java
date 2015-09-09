@@ -7,16 +7,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Segment {
 
-    public Position from;
-    public Position to;
+    public Coordinate from;
+    public Coordinate to;
 
-    public Segment(Position from, Position to) {
+    public Segment(Coordinate from, Coordinate to) {
         this.from = from;
         this.to = to;
     }
 
     public double length(){
-        Position diff = this.from.minus(this.to);
+        Coordinate diff = this.from.minus(this.to);
         return Math.sqrt(diff.x*diff.x + diff.y*diff.y);
     }
 

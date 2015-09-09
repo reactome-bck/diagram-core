@@ -5,27 +5,27 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class Position {
+public class Coordinate {
 
     public Integer x;
     public Integer y;
 
-    public Position(Integer x, Integer y) {
+    public Coordinate(Integer x, Integer y) {
         this.x = x;
         this.y = y;
     }
 
-    public Position(List<Integer> points) {
+    public Coordinate(List<Integer> points) {
         this.x = points.get(0);
         this.y = points.get(1);
     }
 
-    public Position add(Position value){
-        return new Position(x+value.x, y+value.y);
+    public Coordinate add(Coordinate value){
+        return new Coordinate(x+value.x, y+value.y);
     }
 
-    public Position minus(Position value){
-        return new Position(x-value.x, y-value.y);
+    public Coordinate minus(Coordinate value){
+        return new Coordinate(x-value.x, y-value.y);
     }
 
     @Override
@@ -33,10 +33,10 @@ public class Position {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Position position = (Position) o;
+        Coordinate coordinate = (Coordinate) o;
 
-        if (x != null ? !x.equals(position.x) : position.x != null) return false;
-        return !(y != null ? !y.equals(position.y) : position.y != null);
+        if (x != null ? !x.equals(coordinate.x) : coordinate.x != null) return false;
+        return !(y != null ? !y.equals(coordinate.y) : coordinate.y != null);
 
     }
 
