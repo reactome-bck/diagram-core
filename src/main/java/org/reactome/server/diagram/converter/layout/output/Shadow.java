@@ -13,6 +13,8 @@ import java.util.NoSuchElementException;
  */
 public class Shadow extends DiagramObject {
 
+    private static final int MARGIN = 10;
+
     public List<Coordinate> points = new ArrayList<>();
     public String colour;
 
@@ -35,17 +37,26 @@ public class Shadow extends DiagramObject {
         List<Integer> xx = new ArrayList<>();
         List<Integer> yy = new ArrayList<>();
         for (DiagramObject participant : participants) {
-            xx.add(participant.minX);
-            xx.add(participant.maxX);
-            yy.add(participant.minY);
-            yy.add(participant.maxY);
+            if(participant instanceof NodeCommon){
+                NodeCommon node = (NodeCommon) participant;
+                xx.add(node.prop.x);
+                xx.add(node.prop.x + node.prop.width);
+                yy.add(node.prop.y);
+                yy.add(node.prop.y + node.prop.height);
+
+            }else {
+                xx.add(participant.minX);
+                xx.add(participant.maxX);
+                yy.add(participant.minY);
+                yy.add(participant.maxY);
+            }
         }
 
         try {
-            Integer minX = Collections.min(xx);
-            Integer maxX = Collections.max(xx);
-            Integer minY = Collections.min(yy);
-            Integer maxY = Collections.max(yy);
+            Integer minX = Collections.min(xx) - MARGIN;
+            Integer maxX = Collections.max(xx) + MARGIN;
+            Integer minY = Collections.min(yy) - MARGIN;
+            Integer maxY = Collections.max(yy) + MARGIN;
 
             this.points.add(new Coordinate(minX, minY));
             this.points.add(new Coordinate(maxX, minY));
