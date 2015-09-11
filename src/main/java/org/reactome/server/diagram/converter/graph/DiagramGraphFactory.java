@@ -10,6 +10,7 @@ import org.reactome.server.diagram.converter.graph.output.*;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.layout.output.Edge;
 import org.reactome.server.diagram.converter.layout.output.Node;
+import org.reactome.server.diagram.converter.util.MapSet;
 
 import java.util.*;
 
@@ -179,17 +180,19 @@ public class DiagramGraphFactory {
         }
 
         Set<SubpathwayNode> rtn = new HashSet<>();
-        for (GKInstance subpathway : getSubpathways(pathway)) {
-            GraphNode node = new GraphNode(subpathway);
-            rtn.add(new SubpathwayNode(node, getContainedEvents(subpathway)));
+        MapSet<Integer, GKInstance> subpathways = getSubpathways(pathway, 1);
+        for (Integer level : subpathways.keySet()) {
+            for (GKInstance subpathway : subpathways.getElements(level)) {
+                GraphNode node = new GraphNode(subpathway);
+                rtn.add(new SubpathwayNode(node, getContainedEvents(subpathway), level));
+            }
         }
-
         if (rtn.isEmpty()) return null;
         return rtn;
     }
 
-    private Set<GKInstance> getSubpathways(GKInstance pathway){
-        Set<GKInstance> subpathways = new HashSet<>();
+    private MapSet<Integer, GKInstance> getSubpathways(GKInstance pathway, int level){
+        MapSet<Integer, GKInstance> subpathways = new MapSet<>();
         if (!pathway.getSchemClass().isValidAttribute(ReactomeJavaConstants.hasEvent)) return subpathways;
         try {
             List hasEvents = pathway.getAttributeValuesList(ReactomeJavaConstants.hasEvent);
@@ -198,8 +201,8 @@ public class DiagramGraphFactory {
                     GKInstance event = (GKInstance) aux;
                     if(event.getSchemClass().isa(ReactomeJavaConstants.Pathway)){
                         if(!hasDiagram(event)) {
-                            subpathways.add(event);
-                            subpathways.addAll(getSubpathways(event));
+                            subpathways.add(level, event);
+                            subpathways.addAll(getSubpathways(event, level + 1));
                         }
                     }
                 }

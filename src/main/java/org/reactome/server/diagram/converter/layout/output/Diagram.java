@@ -40,8 +40,12 @@ public class Diagram {
     private Integer minY; private Integer maxY;
 
     public void createShadows(Collection<SubpathwayNode> subpathways){
-        if(subpathways!=null)
-        for (SubpathwayNode subpathway : subpathways) {
+        if(subpathways==null) return;
+        int colorId = 0;
+        List<SubpathwayNode> list = new ArrayList<>(subpathways);
+        Collections.sort(list); //Ensures the same colours for the shadows across releases
+        for (SubpathwayNode subpathway : list) {
+            if(subpathway.level>1) continue;
             List<DiagramObject> participants = new ArrayList<>();
             for (Long event : subpathway.events) {
                 Set<Edge> edges = this.edges.getElements(event);
@@ -75,9 +79,9 @@ public class Diagram {
                 }
             }
             if(participants.isEmpty()){
-                System.err.println("Houston! we have a problem with >> " + stableId + ": " + displayName);
+                System.err.println("Subpathway without participants >> " + stableId + ": " + displayName);
             }else {
-                shadows.add(new Shadow(subpathway, participants, getUniqueId()));
+                shadows.add(new Shadow(getUniqueId(), subpathway, participants, colorId++));
             }
         }
     }
