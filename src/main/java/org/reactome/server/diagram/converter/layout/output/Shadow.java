@@ -15,14 +15,15 @@ public class Shadow extends DiagramObject {
 
     private static final int MARGIN = 10;
 
+    public NodeProperties prop = new NodeProperties();
     public List<Coordinate> points = new ArrayList<>();
     public String colour;
 
-    public Shadow(SubpathwayNode subpathway, List<DiagramObject> participants, Long id) {
+    public Shadow(Long id, SubpathwayNode subpathway, List<DiagramObject> participants, Integer colorId) {
         super(subpathway);  //Please note the super constructor won't do anything since SubpathwayNode doesn't have the expected methods
 
         this.id = id;
-        this.colour = ShadowColours.getShadow(id.intValue());
+        this.colour = ShadowColours.getShadow(colorId);
         this.reactomeId = subpathway.dbId;
         this.displayName = subpathway.displayName;
         this.schemaClass = "Pathway";
@@ -31,6 +32,7 @@ public class Shadow extends DiagramObject {
         setPoints(participants);
         setBoundaries();
         setPosition();
+        setProp();
     }
 
     private void setPoints(List<DiagramObject> participants) {
@@ -84,5 +86,13 @@ public class Shadow extends DiagramObject {
         this.maxX = Collections.max(xx);
         this.minY = Collections.min(yy);
         this.maxY = Collections.max(yy);
+    }
+
+    private void setProp(){
+        this.prop.x = minX;
+        this.prop.y = minY;
+        this.prop.width = maxX - minX; // (int) Math.floor(0.7 * (maxX - minX));
+        this.prop.height = maxY - minY; // (int) Math.floor(0.7 * (maxY - minY));
+//        this.prop.height = (int) Math.floor((maxY - minY) / 1.5);
     }
 }
