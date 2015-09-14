@@ -20,12 +20,13 @@ public class PhysicalEntityNode {
 
     private List<Long> diagramIds;
 
-    private Set<PhysicalEntityNode> parents = new LinkedHashSet<PhysicalEntityNode>();
-    private Set<PhysicalEntityNode> children = new LinkedHashSet<PhysicalEntityNode>();
+    private Set<PhysicalEntityNode> parents = new LinkedHashSet<>();
+    private Set<PhysicalEntityNode> children = new LinkedHashSet<>();
 
     //Next variable will NOT contain value for Complexes and EntitySets because they
     //do not have main resources (members or components are treated separately).
     private String identifier = null;
+    private List<String> geneNames = new LinkedList<>();
 
     public PhysicalEntityNode(GKInstance physicalEntity) {
         this.dbId = physicalEntity.getDBID();
@@ -34,7 +35,7 @@ public class PhysicalEntityNode {
         this.species = SpeciesNodeFactory.getSpeciesNode(physicalEntity);
         this.setStableIdentifier(physicalEntity);
         this.diagramIds = new LinkedList<>();
-        this.setResourceIdentifier(physicalEntity);
+        this.setResourceIdentifiers(physicalEntity);
     }
 
     public void addChild(PhysicalEntityNode child){
@@ -49,7 +50,7 @@ public class PhysicalEntityNode {
     }
 
     public Set<PhysicalEntityNode> getAllNodes(){
-        Set<PhysicalEntityNode> rtn = new HashSet<PhysicalEntityNode>();
+        Set<PhysicalEntityNode> rtn = new HashSet<>();
         rtn.add(this);
         if(this.children!=null){
             for (PhysicalEntityNode child : this.children) {
@@ -61,14 +62,14 @@ public class PhysicalEntityNode {
 
     public Set<PhysicalEntityNode> getChildren() {
         if(children==null){
-            return new HashSet<PhysicalEntityNode>();
+            return new HashSet<>();
         }
         return children;
     }
 
     public Set<PhysicalEntityNode> getParents() {
         if(parents==null){
-            return new HashSet<PhysicalEntityNode>();
+            return new HashSet<>();
         }
         return parents;
     }
@@ -91,6 +92,10 @@ public class PhysicalEntityNode {
 
     public String getIdentifier() {
         return identifier;
+    }
+
+    public List<String> getGeneNames() {
+        return geneNames;
     }
 
     public String getSchemaClass() {
@@ -126,7 +131,7 @@ public class PhysicalEntityNode {
         }
     }
 
-    protected void setResourceIdentifier(GKInstance physicalEntity){
+    protected void setResourceIdentifiers(GKInstance physicalEntity){
         try {
             GKInstance rE = (GKInstance) physicalEntity.getAttributeValue(ReactomeJavaConstants.referenceEntity);
             if(rE.getSchemClass().isValidAttribute(ReactomeJavaConstants.variantIdentifier)) {
@@ -134,6 +139,14 @@ public class PhysicalEntityNode {
             }
             if(this.identifier==null && rE.getSchemClass().isValidAttribute(ReactomeJavaConstants.identifier)){
                 this.identifier = (String) rE.getAttributeValue(ReactomeJavaConstants.identifier);
+            }
+            if(rE.getSchemClass().isValidAttribute(ReactomeJavaConstants.geneName)){
+                List names = rE.getAttributeValuesList(ReactomeJavaConstants.geneName);
+                if(names!=null) {
+                    for (Object name : names) {
+                        this.geneNames.add((String) name);
+                    }
+                }
             }
         } catch (Exception e) {
             //Nothing here

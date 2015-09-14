@@ -21,6 +21,7 @@ public class EntityNode extends GraphNode {
     //Next variable will NOT contain value for Complexes and EntitySets because they
     //do not have main resources (members or components are treated separately).
     public String identifier = null;
+    public List<String> geneNames = null;
 
     public Set<Long> parents = null;
     public Set<Long> children = null;
@@ -28,8 +29,11 @@ public class EntityNode extends GraphNode {
     public EntityNode(PhysicalEntityNode node) {
         super(node);
         this.identifier = node.getIdentifier();
+        if (!node.getGeneNames().isEmpty()) {
+            this.geneNames = node.getGeneNames();
+        }
 
-        if(node.getSpecies()!=null) {
+        if (node.getSpecies() != null) {
             this.speciesID = node.getSpecies().getSpeciesID();
         }
         this.setDiagramIds(node.getDiagramIds());
@@ -37,19 +41,19 @@ public class EntityNode extends GraphNode {
         this.setParents(node.getParents());
     }
 
-    private void setChildren(Set<PhysicalEntityNode> children){
-        if(!children.isEmpty()) this.children = new HashSet<>();
+    private void setChildren(Set<PhysicalEntityNode> children) {
+        if (!children.isEmpty()) this.children = new HashSet<>();
         for (PhysicalEntityNode child : children) {
             this.children.add(child.getDbId());
         }
     }
 
-    private void setDiagramIds(List<Long> diagramIds){
+    private void setDiagramIds(List<Long> diagramIds) {
         this.diagramIds = !diagramIds.isEmpty() ? diagramIds : null;
     }
 
-    private void setParents(Set<PhysicalEntityNode> parents){
-        if(!parents.isEmpty()) this.parents = new HashSet<>();
+    private void setParents(Set<PhysicalEntityNode> parents) {
+        if (!parents.isEmpty()) this.parents = new HashSet<>();
         for (PhysicalEntityNode parent : parents) {
             this.parents.add(parent.getDbId());
         }
