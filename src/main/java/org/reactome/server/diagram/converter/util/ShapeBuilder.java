@@ -89,19 +89,19 @@ public abstract class ShapeBuilder {
                 Math.round( (float) (topLeft.x + EDGE_TYPE_WIDGET_WIDTH)),
                 Math.round( (float) (topLeft.y + EDGE_TYPE_WIDGET_WIDTH))
         );
-        Shape rtn = new Shape(topLeft, bottomRight, null, null, Boolean.TRUE, Shape.Type.BOX);
+        Shape rtn = new Shape(topLeft, bottomRight, Boolean.TRUE, Shape.Type.BOX);
         if(symbol!=null) { rtn.s = symbol;}
         return rtn;
     }
 
     public static Shape createReactionCircle(Coordinate centre) {
         Integer radius = Math.round( (float) (EDGE_TYPE_WIDGET_WIDTH / 2.0d - CIRCLE_WIDGET_CORRECTION) );
-        return new Shape(null, null, centre, radius, Boolean.FALSE, Shape.Type.CIRCLE);
+        return new Shape(centre, radius, Boolean.FALSE, Shape.Type.CIRCLE);
     }
 
     public static Shape createReactionDoubleCircle(Coordinate centre) {
         Integer radius = Math.round( (float) (EDGE_TYPE_WIDGET_WIDTH / 2.0d - CIRCLE_WIDGET_CORRECTION) );
-        Shape rtn = new Shape(null, null, centre, radius, Boolean.TRUE, Shape.Type.DOUBLE_CIRCLE);
+        Shape rtn = new Shape(centre, radius, Boolean.TRUE, Shape.Type.DOUBLE_CIRCLE);
         rtn.r1 = Math.round( (float) (ShapeBuilder.EDGE_TYPE_WIDGET_WIDTH / 2.0d - 2 - CIRCLE_WIDGET_CORRECTION) );
         return rtn;
     }
@@ -118,7 +118,7 @@ public abstract class ShapeBuilder {
                 Math.round( (float) (topLeft.x + width)),
                 Math.round( (float) (topLeft.y + width))
         );
-        Shape rtn = new Shape(topLeft, bottomRight, null, null, Boolean.TRUE, Shape.Type.BOX);
+        Shape rtn = new Shape(topLeft, bottomRight, Boolean.TRUE, Shape.Type.BOX);
         return rtn;
     }
 
@@ -134,8 +134,17 @@ public abstract class ShapeBuilder {
                 Math.round( (float) (topLeft.x + width)),
                 Math.round( (float) (topLeft.y + width))
         );
-        Shape shape = new Shape(topLeft, bottomRight, null, null, Boolean.TRUE, Shape.Type.BOX);
+        Shape shape = new Shape(topLeft, bottomRight, Boolean.TRUE, Shape.Type.BOX);
         if(label!=null) {shape.s = label;}
+        return shape;
+    }
+
+    public static Shape createNodeSummaryItem(Coordinate boxCentre, String label) {
+        double width = -1;
+        if (label != null) width = measureText(label).getWidth();
+        if (width < EDGE_TYPE_WIDGET_WIDTH) width = EDGE_TYPE_WIDGET_WIDTH;
+        Shape shape = new Shape(boxCentre, (int) width / 2, Boolean.TRUE, Shape.Type.CIRCLE);
+        if (label != null) shape.s = label;
         return shape;
     }
 

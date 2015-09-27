@@ -32,7 +32,7 @@ public class Connector {
     public Type type;
     public Boolean isFadeOut;
 
-    public List<Segment> segments = new ArrayList<Segment>();
+    public List<Segment> segments = new ArrayList<>();
     public Stoichiometry stoichiometry = new Stoichiometry();
     public Shape endShape;
     public Boolean isDisease;
@@ -45,7 +45,7 @@ public class Connector {
         this.isDisease = edge.isDisease;
         setSegments(part.points);
         setStoichiometryPosition();
-        setPointer(edge, segments, type);
+        setPointer(segments, type);
     }
 
     private void setSegments(List<Coordinate> coordinates){
@@ -90,7 +90,7 @@ public class Connector {
      */
     private void setStoichiometryPosition(){
         if(stoichiometry.value>1) {
-            Segment segment = null;
+            Segment segment;
             if(segments.size()>0){
                 // First try to set the Stoichiometry Position in the segments
                 // Place stoichiometry box in the first segment which is closer to the node
@@ -109,7 +109,7 @@ public class Connector {
                         break;
                     default:
                         System.err.println(" >> Segment was not properly placed");
-                        break;
+                        return;
                 }
             }
             this.stoichiometry.shape = ShapeBuilder.createStoichiometryBox(
@@ -129,11 +129,11 @@ public class Connector {
         return new Coordinate(x.intValue(), y.intValue() );
     }
 
-    private void setPointer(Edge edge, List<Segment> segments, Type connectorType){
+    private void setPointer(List<Segment> segments, Type connectorType){
 
         if(segments.size()>0){
-            Segment segment = null;
-            List<Coordinate> points = null;
+            Segment segment;
+            List<Coordinate> points;
             switch (connectorType){
                 case INPUT:
                     return;
@@ -147,42 +147,42 @@ public class Connector {
                             segment.to.x,
                             segment.to.y);
                     // Shape is a filled arrow
-                    this.endShape = new Shape(points.get(0), points.get(1), points.get(2), null, Boolean.FALSE, Shape.Type.ARROW);
+                    this.endShape = new Shape(points.get(0), points.get(1), points.get(2), Boolean.FALSE, Shape.Type.ARROW);
                     break;
                 case CATALYST:
                     // Use the last segment of the Connector - closer to the edge (reaction)
                     segment = segments.get(segments.size() - 1);
                     // Adjust the position of the segment to have a distance from the reaction position
                     Integer radius = Math.round((float) (ShapeBuilder.EDGE_MODULATION_WIDGET_WIDTH / 2.0d));
-                    Coordinate centre =  calculateEndpoint(segment, getDistanceForEndpoind(type));
+                    Coordinate centre =  calculateEndpoint(segment, getDistanceForEndpoint(type));
                     segment.to  =  calculateEndpoint(segment, getDistanceForEndpoint(type, radius));
                     // Shape is an empty circle
-                    this.endShape = new Shape(null, null, centre, radius, Boolean.TRUE, Shape.Type.CIRCLE);
+                    this.endShape = new Shape(centre, radius, Boolean.TRUE, Shape.Type.CIRCLE);
                     break;
                 case INHIBITOR:
                     // Use the last segment of the Connector - closer to the edge (reaction)
                     segment = segments.get(segments.size() - 1);
                     // Adjust the position of the segment to have a distance from the reaction position
-                    segment.to = calculateEndpoint(segment, getDistanceForEndpoind(type));
+                    segment.to = calculateEndpoint(segment, getDistanceForEndpoint(type));
                     points = ShapeBuilder.createStop(
                             segment.to.x,
                             segment.to.y,
                             segment.from.x,
                             segment.from.y);
                     // Shape is a stop sign
-                    this.endShape = new Shape(points.get(0), points.get(1), points.get(2), null, Boolean.FALSE, Shape.Type.STOP);
+                    this.endShape = new Shape(points.get(0), points.get(1), points.get(2), Boolean.FALSE, Shape.Type.STOP);
                     break;
                 case ACTIVATOR:
                     // Use the last segment of the Connector - closer to the edge (reaction)
                     segment = segments.get(segments.size() - 1);
-                    segment.to = calculateEndpoint(segment, getDistanceForEndpoind(type));
+                    segment.to = calculateEndpoint(segment, getDistanceForEndpoint(type));
                     points = ShapeBuilder.createArrow(
                             segment.to.x,
                             segment.to.y,
                             segment.from.x,
                             segment.from.y);
                     // Shape is an empty arrow
-                    this.endShape = new Shape(points.get(0), points.get(1), points.get(2), null, Boolean.TRUE, Shape.Type.ARROW);
+                    this.endShape = new Shape(points.get(0), points.get(1), points.get(2), Boolean.TRUE, Shape.Type.ARROW);
                     break;
             }
         }
@@ -190,10 +190,6 @@ public class Connector {
 
     /**
      * Calculates the end point on the segment
-     *
-     * @param segment
-     * @param dist
-     * @return
      */
     public Coordinate calculateEndpoint(Segment segment, double dist){
         // Point used to calculate the angle of the segment
@@ -211,10 +207,10 @@ public class Connector {
         double x = oldX + dist * Math.cos(theta);
         double y = oldY + dist * Math.sin(theta);
 
-        return new Coordinate(new Integer(Math.round((float) x )), new Integer(Math.round((float) y )));
+        return new Coordinate(Math.round((float) x), Math.round((float) y));
     }
 
-    private double getDistanceForEndpoind(Type connectRole) {
+    private double getDistanceForEndpoint(Type connectRole) {
         return getDistanceForEndpoint(connectRole, 0);
     }
 

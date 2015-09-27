@@ -156,10 +156,10 @@ public class DiagramGraphFactory {
                     eventNode = new EventNode(event);
                     this.eventBuffer.put(eventNode.getDbId(), eventNode);
                 } else {
-                    logger.error(edge.displayName + " is not a Event");
+                    logger.error(edge.reactomeId + " >> " + edge.displayName + " is not a Event");
                 }
             } catch (Exception e) {
-                logger.error(edge.displayName + " is not in the database", e);
+                logger.error(edge.reactomeId + " >> " + edge.displayName + " is not in the database", e);
             }
         }
         return eventNode;
