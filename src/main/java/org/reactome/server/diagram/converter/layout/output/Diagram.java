@@ -8,6 +8,7 @@ import java.util.*;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
+ * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class Diagram {
     //DO NOT GET SERIALISED
@@ -313,7 +314,7 @@ public class Diagram {
                             segment.from.x,
                             segment.from.y);
                     // Shape is a filled arrow
-                    edge.endShape = new Shape(points.get(0), points.get(1), points.get(2), null, Boolean.FALSE, Shape.Type.ARROW);
+                    edge.endShape = new Shape(points.get(0), points.get(1), points.get(2), Boolean.FALSE, Shape.Type.ARROW);
                 }
             }
         }
@@ -333,7 +334,7 @@ public class Diagram {
                         segment.from.x,
                         segment.from.y);
                 // Shape is a filled arrow
-                link.endShape = new Shape(points.get(0), points.get(1), points.get(2), null, Boolean.FALSE, Shape.Type.ARROW);
+                link.endShape = new Shape(points.get(0), points.get(1), points.get(2), Boolean.FALSE, Shape.Type.ARROW);
             }else if(link.renderableClass.equals("Interaction")){
                 if(link.outputs == null ) return;
                 // Use the last segment of the backbone
@@ -345,7 +346,7 @@ public class Diagram {
                         segment.from.x,
                         segment.from.y);
                 // Shape is an empty arrow
-                link.endShape = new Shape(points.get(0), points.get(1), points.get(2), null, Boolean.TRUE, Shape.Type.ARROW);
+                link.endShape = new Shape(points.get(0), points.get(1), points.get(2), Boolean.TRUE, Shape.Type.ARROW);
             }
         }
     }
@@ -426,6 +427,16 @@ public class Diagram {
                     edge.isFadeOut = null;
                 }
             }
+        }
+    }
+
+    public void setEntitySummaries(){
+        if(nodes==null || nodes.isEmpty()) {
+            throw new RuntimeException("The nodes have not been initialised yet");
+        }
+        for (Node node : nodes.values()) {
+            if(node.isFadeOut!=null) continue;
+            node.setSummaryItems();
         }
     }
 

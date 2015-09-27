@@ -66,9 +66,6 @@ public abstract class LayoutFactory {
             //Generate node connectors
             outputDiagram.setConnectors();
 
-            //Calculate node boundaries
-            outputDiagram.setNodesBoundaries();
-
             //Generate the arrow at the backbones if needed
             outputDiagram.setBackboneArrows();
 
@@ -84,6 +81,11 @@ public abstract class LayoutFactory {
             //Process disease components
             outputDiagram.setDiseaseComponents();
 
+            //Sets the entities visual summary
+            outputDiagram.setEntitySummaries();
+
+            //Calculate node boundaries >> IMPORTANT: Needs to be done after outputDiagram.setEntitySummaries()
+            outputDiagram.setNodesBoundaries();
         }
         return outputDiagram;
     }
