@@ -44,7 +44,7 @@ public class Convertor2JsonTool {
 
     private static TrivialChemicals trivialChemicals;
 
-    private static final String RESTFUL_API = "http://reactome.org/ReactomeRESTfulAPI/RESTfulWS/pathwayDiagram/";
+    private static final String RESTFUL_API = "http://localhost:9090/ReactomeRESTfulAPI/RESTfulWS/pathwayDiagram/";
 
     public static void main(String[] args) throws Exception {
         SimpleJSAP jsap = new SimpleJSAP(
@@ -196,7 +196,7 @@ public class Convertor2JsonTool {
     private static Diagram getDiagram(GKInstance pathway){
         try {
             String stId = diagramFetcher.getPathwayStableId(pathway);
-            String xml = null; //diagramFetcher.getPathwayDiagramXML(pathway);
+            String xml; //diagramFetcher.getPathwayDiagramXML(pathway);
             // For the time being we use the RESTFul API to retrieve the XML as
             // DiagramFetcher does not provide the same diagram ids
             RestTemplate restTemplate = new RestTemplate();
