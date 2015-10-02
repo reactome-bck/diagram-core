@@ -60,9 +60,6 @@ public abstract class LayoutFactory {
                 }
             }
 
-            //Set universal min max
-            outputDiagram.setUniversalBoundaries();
-
             //Generate node connectors
             outputDiagram.setConnectors();
 
@@ -86,6 +83,9 @@ public abstract class LayoutFactory {
 
             //Calculate node boundaries >> IMPORTANT: Needs to be done after outputDiagram.setEntitySummaries()
             outputDiagram.setNodesBoundaries();
+
+            //Set universal min max >> IMPORTANT: This has to always be done at the very end
+            outputDiagram.setUniversalBoundaries();
         }
         return outputDiagram;
     }
