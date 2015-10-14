@@ -154,7 +154,7 @@ public class EventNode extends GraphNode {
         for (GKInstance regulation : regulations) {
             try {
                 GKInstance regulator = (GKInstance) regulation.getAttributeValue(ReactomeJavaConstants.regulator);
-                if (regulator == null)
+                if (regulator == null || !regulator.getSchemClass().isa(ReactomeJavaConstants.PhysicalEntity))
                     continue; // Just in case. This should not happen usually
 
                 // Have to check Requirement first since it is a subclass to PositiveRegulation
