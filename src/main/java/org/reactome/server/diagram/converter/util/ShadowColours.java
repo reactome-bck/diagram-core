@@ -14,7 +14,7 @@ public class ShadowColours {
         shadows = new ArrayList<>();
         shadows.add("#4684ee");
         shadows.add("#dc3912");
-        shadows.add("#ff9900");
+//        shadows.add("#ff9900");
         shadows.add("#008000");
         shadows.add("#666666");
         shadows.add("#4942cc");
