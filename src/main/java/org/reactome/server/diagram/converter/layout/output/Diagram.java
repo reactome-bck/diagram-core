@@ -249,12 +249,43 @@ public class Diagram {
         return maxX;
     }
 
-     public Integer getMinY() {
+    public Integer getMinY() {
         return minY;
     }
 
     public Integer getMaxY() {
         return maxY;
+    }
+
+    public void fadeOutNormalComponents(){
+        if(     (isDisease != null && isDisease) &&
+                (notFadeOut == null || notFadeOut.isEmpty())) {
+            if(nodes==null || nodes.isEmpty()){
+                throw new RuntimeException("The nodes have not been initialised yet");
+            }else if(edges==null || edges.isEmpty()){
+                throw new RuntimeException("The edges have not been initialised yet");
+            }
+
+            for (Node node : nodes.values()) {
+                node.isFadeOut=Boolean.TRUE;
+
+                if(node.connectors!=null){
+                    for (Connector connector : node.connectors) {
+                        connector.isFadeOut = Boolean.TRUE;
+                    }
+                }
+            }
+
+            for(Edge edge : edges.values()) {
+                    edge.isFadeOut = Boolean.TRUE;
+            }
+
+            if(links!=null) {
+                for (Link link : links.values()) {
+                    link.isFadeOut = Boolean.TRUE;
+                }
+            }
+        }
     }
 
     /**
@@ -425,6 +456,14 @@ public class Diagram {
             for(Edge edge : edges.values()) {
                 if (diseaseComponents.contains(edge.id)) {
                     edge.isFadeOut = null;
+                }
+            }
+
+            if(links!=null && !links.isEmpty()) {
+                for (Link link : links.values()) {
+                    if (diseaseComponents.contains(link.id)) {
+                        link.isFadeOut = null;
+                    }
                 }
             }
         }

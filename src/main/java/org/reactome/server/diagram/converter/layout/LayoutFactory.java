@@ -69,6 +69,9 @@ public abstract class LayoutFactory {
             //Generate the arrow of links
             outputDiagram.setLinkArrows();
 
+            //In case of a disease pathway normal nodes should be faded out
+            outputDiagram.fadeOutNormalComponents();
+
             //Process the crossed components
             outputDiagram.setCrossedComponents();
 
