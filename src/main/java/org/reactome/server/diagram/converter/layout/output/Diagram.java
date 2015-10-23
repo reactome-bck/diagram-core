@@ -259,6 +259,7 @@ public class Diagram {
 
     public void fadeOutNormalComponents(){
         if(     (isDisease != null && isDisease) &&
+                (forNormalDraw == false) &&
                 (notFadeOut == null || notFadeOut.isEmpty())) {
             if(nodes==null || nodes.isEmpty()){
                 throw new RuntimeException("The nodes have not been initialised yet");
