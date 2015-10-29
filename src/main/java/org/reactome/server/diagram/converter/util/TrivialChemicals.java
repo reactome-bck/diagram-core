@@ -42,10 +42,14 @@ public class TrivialChemicals {
             }
         }
 
+        Set<Node> noTrivial = new HashSet<>();
         for (Edge edge : diagram.getEdges()) {
-            checkingTrivialMolecules(trivialMolecules, edge.inputs);
-            checkingTrivialMolecules(trivialMolecules, edge.outputs);
-//            checkingTrivialMolecules(trivialMolecules, edge.catalysts);
+            noTrivial.addAll(getNotTrivialMolecules(trivialMolecules, edge.inputs));
+            noTrivial.addAll(getNotTrivialMolecules(trivialMolecules, edge.outputs));
+//            getNotTrivialMolecules(trivialMolecules, edge.catalysts);
+        }
+        for (Node node : noTrivial) {
+            node.trivial = null;
         }
 
         return diagram;
@@ -56,18 +60,22 @@ public class TrivialChemicals {
      * @param trivialMolecules map of the glyphs id to molecules nodes
      * @param parts the target parts of a reaction
      */
-    private void checkingTrivialMolecules(Map<Long, Node> trivialMolecules, List<ReactionPart> parts){
-        boolean allTrivial = true;
-        for (ReactionPart input : parts) {
-            Node aux = trivialMolecules.get(input.id);
-            allTrivial &= (aux!=null && aux.trivial!=null);
-        }
-        if(allTrivial){
+    private Set<Node> getNotTrivialMolecules(Map<Long, Node> trivialMolecules, List<ReactionPart> parts){
+        Set<Node> rtn = new HashSet<>();
+        if(parts!=null) {
+            boolean allTrivial = true;
             for (ReactionPart input : parts) {
-                Node trivial = trivialMolecules.get(input.id);
-                if(trivial!=null) trivial.trivial=null;
+                Node aux = trivialMolecules.get(input.id);
+                allTrivial &= (aux != null && aux.trivial != null);
+            }
+            if (allTrivial) {
+                for (ReactionPart input : parts) {
+                    Node trivial = trivialMolecules.get(input.id);
+                    if (trivial != null) rtn.add(trivial);
+                }
             }
         }
+        return rtn;
     }
     
     private void initialise(String fileLocation){
