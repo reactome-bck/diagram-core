@@ -1,7 +1,5 @@
 package org.reactome.server.diagram.converter.layout.output;
 
-import org.reactome.server.diagram.converter.input.model.Component;
-import org.reactome.server.diagram.converter.input.model.Components;
 import org.reactome.server.diagram.converter.input.model.NodeAttachments;
 import org.reactome.server.diagram.converter.input.model.OrgGkRenderRenderableFeature;
 import org.reactome.server.diagram.converter.util.ShapeBuilder;
@@ -77,22 +75,6 @@ public class Node extends NodeCommon {
         return rtn.isEmpty() ? null : rtn;
     }
 
-    private static List<Long> getComponents(Method method, Object object) {
-        List<Long> rtn = new LinkedList<>();
-        try {
-            Components components = (Components) method.invoke(object);
-            if (components != null && components.getComponent() != null) {
-                for (Object c : components.getComponent()) {
-                    Component component = (Component) c;
-                    rtn.add(component.getId().longValue());
-                }
-            }
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return rtn.isEmpty() ? null : rtn;
-    }
-
     public void setBoundaries() {
         List<Integer> xx = new ArrayList<>();
         xx.add(this.prop.x);
@@ -143,6 +125,7 @@ public class Node extends NodeCommon {
             }
         }
         // In case of a gene also include the arrow
+        //noinspection Duplicates
         if (endShape != null) {
             xx.add(endShape.minX);
             xx.add(endShape.maxX);
@@ -170,9 +153,9 @@ public class Node extends NodeCommon {
     }
 
     public void setSummaryItems() {
-        if (this.renderableClass.equals("Protein")) {// || this.renderableClass.equals("Chemical")) {
-            this.summaryItems = new ArrayList<>();
-            this.summaryItems.add(new SummaryItem(SummaryItem.Type.TR, this));
-        }
+//        if (this.renderableClass.equals("Protein")) {// || this.renderableClass.equals("Chemical")) {
+//            this.summaryItems = new ArrayList<>();
+//            this.summaryItems.add(new SummaryItem(SummaryItem.Type.TR, this));
+//        }
     }
 }
