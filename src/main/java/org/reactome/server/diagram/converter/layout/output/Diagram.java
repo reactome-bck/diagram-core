@@ -2,6 +2,7 @@ package org.reactome.server.diagram.converter.layout.output;
 
 import org.reactome.server.diagram.converter.graph.output.SubpathwayNode;
 import org.reactome.server.diagram.converter.util.MapSet;
+import org.reactome.server.diagram.converter.util.ShadowsUtil;
 import org.reactome.server.diagram.converter.util.ShapeBuilder;
 
 import java.util.*;
@@ -84,6 +85,11 @@ public class Diagram {
             }else {
                 shadows.add(new Shadow(getUniqueId(), subpathway, participants, colorId++));
             }
+        }
+
+        if(!shadows.isEmpty()){
+            //Shadows util repositions the shadows text for a better look and feel
+            this.shadows = (new ShadowsUtil(shadows)).getShadows();
         }
     }
 
