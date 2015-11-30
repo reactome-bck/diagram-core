@@ -43,7 +43,13 @@ public abstract class LayoutFactory {
             //Parse Nodes
             for (NodeCommon nodeCommon : extractNodesList(inputProcess.getNodes())) {
                 if(nodeCommon instanceof Node) {
-                    outputDiagram.addNode((Node) nodeCommon);
+                    try {
+                        outputDiagram.addNode((Node) nodeCommon);
+                    } catch(DuplicateIdException e){
+                        System.err.println(e.getMessage());
+                        logger.warning(e.getMessage());
+                        return null;
+                    }
                 }else if(nodeCommon instanceof Note){
                     outputDiagram.addNote((Note) nodeCommon);
                 }else if(nodeCommon instanceof Compartment){
@@ -56,7 +62,13 @@ public abstract class LayoutFactory {
                 if(edgeCommon instanceof Link){
                     outputDiagram.addLink((Link) edgeCommon);
                 }else if(edgeCommon instanceof Edge){
-                    outputDiagram.addEdge((Edge) edgeCommon);
+                    try {
+                        outputDiagram.addEdge((Edge) edgeCommon);
+                    } catch (DuplicateIdException e){
+                        System.err.println(e.getMessage());
+                        logger.warning(e.getMessage());
+                        return null;
+                    }
                 }
             }
 

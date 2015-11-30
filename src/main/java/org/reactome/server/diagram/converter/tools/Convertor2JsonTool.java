@@ -23,10 +23,8 @@ import org.reactome.server.diagram.converter.util.JsonWriter;
 import org.reactome.server.diagram.converter.util.TrivialChemicals;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Collection;
+import java.util.*;
 
 /**
  * This tool converts XML files containing pathway diagrams into JSON files
@@ -43,8 +41,6 @@ public class Convertor2JsonTool {
     private static DiagramGraphFactory graphFactory;
 
     private static TrivialChemicals trivialChemicals;
-
-    private static final String RESTFUL_API = "http://localhost:9090/ReactomeRESTfulAPI/RESTfulWS/pathwayDiagram/";
 
     public static void main(String[] args) throws Exception {
         SimpleJSAP jsap = new SimpleJSAP(
@@ -196,14 +192,7 @@ public class Convertor2JsonTool {
     private static Diagram getDiagram(GKInstance pathway){
         try {
             String stId = diagramFetcher.getPathwayStableId(pathway);
-            String xml; //diagramFetcher.getPathwayDiagramXML(pathway);
-            // For the time being we use the RESTFul API to retrieve the XML as
-            // DiagramFetcher does not provide the same diagram ids
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.getForEntity(
-                    RESTFUL_API + pathway.getDBID() + "/XML",
-                    String.class);
-            xml = response.getBody();
+            String xml = diagramFetcher.getPathwayDiagramXML(pathway);
             if(xml!=null) {
                 Process process = processFactory.createProcess(xml, stId);
                 return LayoutFactory.getDiagramFromProcess(process, pathway.getDBID(), stId);
