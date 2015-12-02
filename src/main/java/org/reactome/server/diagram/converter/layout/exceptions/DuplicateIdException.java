@@ -1,4 +1,4 @@
-package org.reactome.server.diagram.converter.layout;
+package org.reactome.server.diagram.converter.layout.exceptions;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>

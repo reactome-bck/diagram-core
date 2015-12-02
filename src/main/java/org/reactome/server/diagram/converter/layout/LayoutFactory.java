@@ -1,13 +1,15 @@
 package org.reactome.server.diagram.converter.layout;
 
+import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.input.model.*;
 import org.reactome.server.diagram.converter.input.model.Process;
 import org.reactome.server.diagram.converter.input.model.Properties;
+import org.reactome.server.diagram.converter.layout.exceptions.DuplicateIdException;
 import org.reactome.server.diagram.converter.layout.output.*;
+import org.reactome.server.diagram.converter.tools.Convertor2JsonTool;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -47,7 +49,7 @@ public abstract class LayoutFactory {
                         outputDiagram.addNode((Node) nodeCommon);
                     } catch(DuplicateIdException e){
                         System.err.println(e.getMessage());
-                        logger.warning(e.getMessage());
+                        logger.error(e.getMessage());
                         return null;
                     }
                 }else if(nodeCommon instanceof Note){
@@ -66,7 +68,7 @@ public abstract class LayoutFactory {
                         outputDiagram.addEdge((Edge) edgeCommon);
                     } catch (DuplicateIdException e){
                         System.err.println(e.getMessage());
-                        logger.warning(e.getMessage());
+                        logger.error(e.getMessage());
                         return null;
                     }
                 }
@@ -133,7 +135,7 @@ public abstract class LayoutFactory {
                 }else{
                     ///TODO enable it
                     System.err.println(" - NOT RECOGNISED NODE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]" );
-                    logger.warning(" - NOT RECOGNISED NODE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
+                    logger.warn(" - NOT RECOGNISED NODE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
                 }
             }
         }
@@ -172,8 +174,10 @@ public abstract class LayoutFactory {
                     rtn.add(new Link(item));
                 }else{
                     ///TODO enable it
-                    System.err.println(" - NOT RECOGNISED EDGE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]" );
-                    logger.warning(" - NOT RECOGNISED NODE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
+                    if(Convertor2JsonTool.VERBOSE) {
+                        System.err.println(" - NOT RECOGNISED NODE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
+                    }
+                    logger.warn(" - NOT RECOGNISED NODE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
                 }
             }
         }

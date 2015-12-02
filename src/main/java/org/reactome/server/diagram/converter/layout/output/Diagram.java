@@ -1,12 +1,12 @@
 package org.reactome.server.diagram.converter.layout.output;
 
+import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.graph.output.SubpathwayNode;
-import org.reactome.server.diagram.converter.layout.DuplicateIdException;
+import org.reactome.server.diagram.converter.layout.exceptions.DuplicateIdException;
 import org.reactome.server.diagram.converter.util.MapSet;
 import org.reactome.server.diagram.converter.util.ShapeBuilder;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -85,6 +85,7 @@ public class Diagram {
             }
             if(participants.isEmpty()){
                 System.err.println("Subpathway without participants >> " + stableId + ": " + displayName);
+                logger.warn("Subpathway without participants >> " + stableId + ": " + displayName);
             }else {
                 shadows.add(new Shadow(getUniqueId(), subpathway, participants, colorId++));
             }
@@ -164,7 +165,7 @@ public class Diagram {
             this.nodes.add(node.reactomeId, node);
             DiagramObject duplicateEntry = this.objectMap.put(node.id, node);
             if(duplicateEntry!=null){
-                throw new DuplicateIdException(getStableId() + " - Nodes with duplicate diagram IDs >> " + node.displayName + " [" + node.id + "] <-> " + duplicateEntry.displayName + " [" + duplicateEntry.id + "]");
+                throw new DuplicateIdException("ERROR in: " + getStableId() + " - Nodes with duplicate diagram IDs >> " + node.displayName + " [" + node.id + "] <-> " + duplicateEntry.displayName + " [" + duplicateEntry.id + "]");
             }
             setLastId(node);
             return true;
@@ -195,7 +196,7 @@ public class Diagram {
             this.edges.add(edge.reactomeId, edge);
             DiagramObject duplicateEntry = this.objectMap.put(edge.id, edge);
             if(duplicateEntry!=null){
-                throw new DuplicateIdException(getStableId() + " - Edges with duplicate diagram IDs >> " + edge.displayName + " [" + edge.id + "] <-> " + duplicateEntry.displayName + " [" + duplicateEntry.id + "]" );
+                throw new DuplicateIdException("ERROR in: " + getStableId() + " - Edges with duplicate diagram IDs >> " + edge.displayName + " [" + edge.id + "] <-> " + duplicateEntry.displayName + " [" + duplicateEntry.id + "]" );
             }
             setLastId(edge);
             return true;

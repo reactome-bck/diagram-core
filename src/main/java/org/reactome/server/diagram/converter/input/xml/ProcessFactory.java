@@ -8,10 +8,12 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.StringReader;
+import java.net.URL;
 
 /**
  * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
@@ -36,7 +38,11 @@ public class ProcessFactory {
             SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = null;
             try {
-                schema = sf.newSchema(new File(schemaLocation));
+                ClassLoader classLoader = getClass().getClassLoader();
+                URL url = classLoader.getResource(schemaLocation);
+                if(url!=null) {
+                    schema = sf.newSchema(new File(url.getFile()));
+                }
             } catch (SAXException e) {
                 e.printStackTrace();
             }
