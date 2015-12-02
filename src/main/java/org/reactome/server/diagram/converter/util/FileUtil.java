@@ -49,6 +49,14 @@ public abstract class FileUtil {
         logger.info(fileName + " is a valid file name");
     }
 
+    public static boolean fileExists(String fileName){
+        File file = new File(fileName);
+        if(file.exists() && !file.isDirectory()){
+            return true;
+        }
+        return false;
+    }
+
     public static String checkFolderName(String folderName){
         Path folder = Paths.get(folderName);
 

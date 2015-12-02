@@ -45,7 +45,7 @@ public class Convertor2JsonTool {
     public static void main(String[] args) throws Exception {
         SimpleJSAP jsap = new SimpleJSAP(
                 Convertor2JsonTool.class.getName(),
-                "A set of tools to convert the pathway diagrams from XML to JSON format",
+                "A tool to convert the pathway diagrams from XML to JSON format and produce the accompanying graphs",
                 new Parameter[]{
                         new UnflaggedOption("tool", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, JSAP.NOT_GREEDY,
                                 "The tool to use. Options:" + Main.Tool.getOptions())
@@ -54,13 +54,15 @@ public class Convertor2JsonTool {
                         , new FlaggedOption("database", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'd', "database",
                         "The reactome database name to connect to")
                         , new FlaggedOption("username", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'u', "username",
-                        "The database user")
+                        "The database username")
                         , new FlaggedOption("password", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'p', "password",
                         "The password to connect to the database")
                         , new FlaggedOption("output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'o', "output",
                         "The directory where the converted files are written to.")
+                        , new FlaggedOption("trivial", JSAP.STRING_PARSER, "trivialchemicals.txt", JSAP.NOT_REQUIRED, 'r', "trivial",
+                        "A file containing the ids and the names of the trivial molecules.")
                         , new QualifiedSwitch("target", JSAP.STRING_PARSER, "ALL", JSAP.NOT_REQUIRED, 't', "target",
-                        "Source pathways to convert").setList(true).setListSeparator(',')
+                        "Target pathways to convert. Use either comma separated IDs, 'human' for human pathways or 'all' for everything ").setList(true).setListSeparator(',')
                         , new QualifiedSwitch("verbose", JSAP.BOOLEAN_PARSER, null, JSAP.NOT_REQUIRED, 'v', "verbose",
                         "Requests verbose output.")
                 }
@@ -91,7 +93,7 @@ public class Convertor2JsonTool {
         helper.setDba(dba);
         diagramFetcher = new DiagramFetcher(dba);
         graphFactory = new DiagramGraphFactory(dba);
-        processFactory = new ProcessFactory("src/main/resources/process_schema.xsd");
+        processFactory = new ProcessFactory("/process_schema.xsd");
 
         //Check if output directory exists
         final String output = FileUtil.checkFolderName(config.getString("output"));
@@ -100,7 +102,13 @@ public class Convertor2JsonTool {
         VERBOSE = config.getBoolean("verbose");
 
         //Initialise TrivialChemicals Map
-        trivialChemicals = new TrivialChemicals("src/main/resources/trivialchemicals.txt");
+        String trivialChemicalsFile = config.getString("trivial");
+        if(FileUtil.fileExists(trivialChemicalsFile)){
+            printMessage(" >> Using " + trivialChemicalsFile + " to annotate trivial chemicals...");
+            trivialChemicals = new TrivialChemicals(trivialChemicalsFile);
+        }else{
+            printMessage(" >> Trivial chemicals file was not found. Skipping annotation...");
+        }
 
         //1. Query for all XML diagrams if required
         if (target[0].toUpperCase().equals("ALL")) {
@@ -115,10 +123,11 @@ public class Convertor2JsonTool {
                 examinedPathways++;
                 if(VERBOSE) {
                     if (examinedPathways % 500 == 0) {
-                        System.out.format("\r >> Processing : %.1f%% - Converted: [%d / %d] ",
+                        System.out.format("\r >> Processing: %.1f%% - Examined: [%d/%d] - Converted: %d ",
                                 examinedPathways * 100 / (float) pathways.size(),
-                                pathwaysWithDiagrams,
-                                examinedPathways);
+                                examinedPathways,
+                                pathways.size(),
+                                pathwaysWithDiagrams);
                     }
                 }
                 if(convert((GKInstance) p, output)){
@@ -141,10 +150,11 @@ public class Convertor2JsonTool {
                     examinedPathways++;
                     if (VERBOSE) {
                         if (examinedPathways % 200 == 0) {
-                            System.out.format("\r >> Processing : %.1f%% - Converted: [%d / %d] ",
+                            System.out.format("\r >> Processing: %.1f%% - Examined: [%d/%d] - Converted: %d ",
                                     examinedPathways * 100 / (float) pathways.size(),
-                                    pathwaysWithDiagrams,
-                                    examinedPathways);
+                                    examinedPathways,
+                                    pathways.size(),
+                                    pathwaysWithDiagrams);
                         }
                     }
                     if (convert((GKInstance) p, output)) {
@@ -182,7 +192,9 @@ public class Convertor2JsonTool {
             JsonWriter.serialiseGraph(graph, outputDir);
 
             diagram.createShadows(graph.getSubpathways());
-            diagram = trivialChemicals.annotateTrivialChemicals(diagram, graphFactory.getPhysicalEntityMap());
+            if(trivialChemicals!=null) {
+                diagram = trivialChemicals.annotateTrivialChemicals(diagram, graphFactory.getPhysicalEntityMap());
+            }
             JsonWriter.serialiseDiagram(diagram, outputDir);
             return true;
         }
