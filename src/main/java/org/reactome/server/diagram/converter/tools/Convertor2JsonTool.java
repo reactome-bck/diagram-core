@@ -44,7 +44,7 @@ public class Convertor2JsonTool {
 
     private static TrivialChemicals trivialChemicals;
 
-    private static final String RESTFUL_API = "http://localhost:9090/ReactomeRESTfulAPI/RESTfulWS/pathwayDiagram/";
+    private static final String RESTFUL_API = "http://reactomedev.oicr.on.ca/ReactomeRESTfulAPI/RESTfulWS/pathwayDiagram/";
 
     public static void main(String[] args) throws Exception {
         SimpleJSAP jsap = new SimpleJSAP(
