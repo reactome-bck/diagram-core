@@ -22,27 +22,15 @@ public class XMLValidationEventHandler implements ValidationEventHandler{
         return internalLogger;
     }
 
-
     @Override
     public boolean handleEvent(ValidationEvent event) {
-        //TODO use mail API to send an email with the report
-        //TODO CLEAN-UP
         if(internalLogger!=null){
             internalLogger.append("XML Parsing Event.")
-                    .append(" MESSAGE:  " + event.getMessage())
-                    .append(" LINE: " + event.getLocator().getLineNumber())
-                    .append(" COLUMN: " + event.getLocator().getColumnNumber())
-                    .append(" SEVERITY:  " + event.getSeverity());
+                    .append(" MESSAGE:  ").append(event.getMessage())
+                    .append(" LINE: ").append(event.getLocator().getLineNumber())
+                    .append(" COLUMN: ").append(event.getLocator().getColumnNumber())
+                    .append(" SEVERITY:  ").append(event.getSeverity());
         }
-
-//            logger.warn("   XML Parsing Event");
-//            logger.warn("      LINE: " + event.getLocator().getLineNumber());
-//            logger.warn("      COLUMN: " + event.getLocator().getColumnNumber());
-//            logger.warn("      SEVERITY:  " + event.getSeverity());
-//            logger.warn("      MESSAGE:  " + event.getMessage());
-//            logger.warn("      URL:  " + event.getLocator().getURL());
-//            logger.trace(System.lineSeparator());
-
         return true;
     }
 }
