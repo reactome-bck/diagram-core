@@ -136,7 +136,7 @@ public class ShadowsUtil {
                     List<Box> boxes = shapePartition.decompose(xCoords, yCoords);
 
                     /** Get the largest Rectangle. This is generic and return Java Rectangles **/
-                    Rectangle bound = getLargestRectangle(boxes);
+                    Rectangle bound = getLargestRectangleSimple(boxes);
 
                     /** Convert the rectangle to ReactomeShadow **/
                     availableArea = new ReactomeShadow(bound);
@@ -335,6 +335,119 @@ public class ShadowsUtil {
             return largestRectagle;
         }
 
+        return noSizeRectangle;
+    }
+
+    /**
+     * Based on a list of Box coordinates, create rectangles,
+     * calculate the area and retrieve the one with largest area.
+     *
+     * @param boxes strips
+     * @return largest rectangle
+     */
+    private Rectangle getLargestRectangleSimple(List<Box> boxes) {
+        /** Keep the wide rectangle here **/
+        Rectangle largestRectagle = null;
+
+        /** The noSizeRectangle will be used in case the Largest Rectangle does not fit our minimum requirements W and H **/
+        Rectangle noSizeRectangle = new Rectangle(0, 0, 0, 0);;
+
+        /** Hold the rectangles after creating them from the Boxes coordinates **/
+        List<Rectangle> rectangles = new LinkedList<>();
+
+        /** Get the boxes with coordinates and create rectangles **/
+        for (Box box : boxes) {
+            List<XYPoint> xyPoints = box.getXYPoints();
+
+            /** Build the Rectangle based on the Points **/
+            Rectangle rect = new Rectangle(new Point(xyPoints.get(0).getX(), xyPoints.get(0).getY()));
+            for (int i = 1; i < xyPoints.size(); i++) {
+                rect.add(new Point(xyPoints.get(i).getX(), xyPoints.get(i).getY()));
+            }
+
+            rectangles.add(rect);
+        }
+
+        /** No rectangle is the largest - having 0-sized Rectangle the Text will be placed in the center as is **/
+        if (rectangles.size() == 0) {
+            return noSizeRectangle;
+        }
+
+        /** If there is only one Rectangle this is the one we take **/
+        if (rectangles.size() == 1) {
+            Rectangle rectangle = rectangles.get(0);
+            if(rectangle.height >= MIN_HEIGHT_THRESHOLD && rectangle.width >= MIN_WIDTH_THRESHOLD) {
+                return rectangle;
+            }
+            return noSizeRectangle;
+        }
+
+        /** Keep the areas in a map **/
+        TreeMap<Integer, Rectangle> areas = new TreeMap<>();
+
+        /** Iterate the rectangles and get the wider one **/
+        for (Rectangle currentRectangle : rectangles) {
+            /** getting the wider one **/
+            int width = currentRectangle.width;
+            int height = currentRectangle.height;
+
+            if (height >= MIN_HEIGHT_THRESHOLD && width >= MIN_WIDTH_THRESHOLD) { // ok, apply threshold
+                int area = width * height;
+
+                if(areas.containsKey(area)){
+                    Rectangle rec = areas.get(area);
+                    if(currentRectangle.width > rec.width) {
+                        areas.put(area, currentRectangle);
+                    }
+                }else {
+                    areas.put(area, currentRectangle);
+                }
+            }
+        }
+
+
+        double FACTOR = 1.5;
+
+        if(areas.size() > 0) {
+
+            /** Put the map in reverse order - First one has the largest area **/
+            NavigableMap<Integer, Rectangle> reverseMap = areas.descendingMap();
+
+            /** First has possible largest area **/
+            Integer area = reverseMap.firstEntry().getKey();
+            Rectangle possibleLargestRectangle = reverseMap.firstEntry().getValue();
+
+            /** remove the one with largest area, then we don't need to compare with the same one. **/
+            reverseMap.remove(area, possibleLargestRectangle);
+
+            if(possibleLargestRectangle.width >= possibleLargestRectangle.height){
+                /** ok, larger area and wider **/
+                return  possibleLargestRectangle;
+            }else {
+                /** check the in the following area the wider one **/
+                for (Integer anotherArea : reverseMap.keySet()) {
+                    Rectangle anotherRect = reverseMap.get(anotherArea);
+                    /**
+                     * ok, wider than the possible largest rectangle.
+                     * However we can't proceed with the wider only, otherwise it may retrieve smaller places in the
+                     * rectangle just because of its width. Let's apply a FACTOR SCALE just to mock the area a litte bit
+                     * if the new area is greater than the other - ok, we have a new wider one having a considerable
+                     * free place as well.
+                     */
+                    if(anotherRect.width > possibleLargestRectangle.width){
+                        int newWidth = (int)(anotherRect.width * FACTOR);
+                        if((newWidth * anotherRect.height) >= (possibleLargestRectangle.width * possibleLargestRectangle.height)){
+                            return anotherRect;
+                        }
+                    }
+                }
+            }
+
+            /** ok, applied the FACTOR but the areas are very distinct from each other. Go ahead with the largest area. **/
+            return possibleLargestRectangle;
+        }
+
+        /** rectangles out of the threshold, we can't touch it **/
         return noSizeRectangle;
     }
 
