@@ -10,10 +10,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class SummaryItem {
     public enum Type {
-        TL(0F, 0F),
-        TR(1F, 0F),
-        BR(1F, 1F),
-        BL(0F, 1F);
+        TL(0F, 0F),     //Top Left
+        TR(1F, 0F),     //Top Right
+        BR(1F, 1F),     //Bottom Right
+        BL(0F, 1F);     //Bottom Left
 
         float relativeX;
         float relativeY;
@@ -34,6 +34,8 @@ public class SummaryItem {
                 Math.round(node.prop.x + node.prop.width * type.relativeX),
                 Math.round(node.prop.y + node.prop.height * type.relativeY)
         );
-        this.shape = ShapeBuilder.createNodeSummaryItem(boxCentre, "1");
+        //Interactors number depends on the selected source.
+        // Here we only create an empty place holder
+        this.shape = ShapeBuilder.createNodeSummaryItem(boxCentre, null);
     }
 }
