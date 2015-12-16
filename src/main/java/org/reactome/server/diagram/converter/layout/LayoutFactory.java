@@ -1,12 +1,12 @@
 package org.reactome.server.diagram.converter.layout;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.input.model.*;
 import org.reactome.server.diagram.converter.input.model.Process;
 import org.reactome.server.diagram.converter.input.model.Properties;
-import org.reactome.server.diagram.converter.layout.exceptions.DuplicateIdException;
 import org.reactome.server.diagram.converter.layout.output.*;
-import org.reactome.server.diagram.converter.tools.Convertor2JsonTool;
+import org.reactome.server.diagram.converter.util.LogUtil;
 
 import java.io.Serializable;
 import java.util.*;
@@ -18,9 +18,10 @@ import java.util.*;
 public abstract class LayoutFactory {
 
     private static Logger logger = Logger.getLogger(LayoutFactory.class.getName());
+    private static Diagram outputDiagram = null;
 
     public static Diagram getDiagramFromProcess(Process inputProcess, Long dbId, String stId) {
-        Diagram outputDiagram = null;
+
         if(inputProcess!=null) {
             outputDiagram = new Diagram();
 
@@ -45,13 +46,7 @@ public abstract class LayoutFactory {
             //Parse Nodes
             for (NodeCommon nodeCommon : extractNodesList(inputProcess.getNodes())) {
                 if(nodeCommon instanceof Node) {
-                    try {
-                        outputDiagram.addNode((Node) nodeCommon);
-                    } catch(DuplicateIdException e){
-                        System.err.println(e.getMessage());
-                        logger.error(e.getMessage());
-                        return null;
-                    }
+                    outputDiagram.addNode((Node) nodeCommon);
                 }else if(nodeCommon instanceof Note){
                     outputDiagram.addNote((Note) nodeCommon);
                 }else if(nodeCommon instanceof Compartment){
@@ -64,13 +59,7 @@ public abstract class LayoutFactory {
                 if(edgeCommon instanceof Link){
                     outputDiagram.addLink((Link) edgeCommon);
                 }else if(edgeCommon instanceof Edge){
-                    try {
-                        outputDiagram.addEdge((Edge) edgeCommon);
-                    } catch (DuplicateIdException e){
-                        System.err.println(e.getMessage());
-                        logger.error(e.getMessage());
-                        return null;
-                    }
+                    outputDiagram.addEdge((Edge) edgeCommon);
                 }
             }
 
@@ -126,16 +115,16 @@ public abstract class LayoutFactory {
                         clazz.equals(OrgGkRenderProcessNode.class)          ||
                         clazz.equals(OrgGkRenderRenderableEntity.class)     ||
                         clazz.equals(OrgGkRenderRenderableGene.class) ){
-                    rtn.add(new Node(inputNode));
+                    Node node = new Node(inputNode);
+                    fixBrokenRenderableClass(node);
+                    rtn.add(node);
                 }else if(clazz.equals(OrgGkRenderNote.class) ){
                     Note note = new Note(inputNode);
                     if(!note.displayName.equals("Note")){rtn.add(note);}
                 }else if (clazz.equals(OrgGkRenderRenderableCompartment.class) ){
                     rtn.add(new Compartment(inputNode));
                 }else{
-                    ///TODO enable it
-                    System.err.println(" - NOT RECOGNISED NODE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]" );
-                    logger.warn(" - NOT RECOGNISED NODE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
+                    LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains a not recognised NODE type - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
                 }
             }
         }
@@ -173,15 +162,26 @@ public abstract class LayoutFactory {
                             clazz.equals(OrgGkRenderRenderableInteraction.class)     ){
                     rtn.add(new Link(item));
                 }else{
-                    ///TODO enable it
-                    if(Convertor2JsonTool.VERBOSE) {
-                        System.err.println(" - NOT RECOGNISED NODE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
-                    }
-                    logger.warn(" - NOT RECOGNISED NODE TYPE - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
+                    LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains a not recognised EDGE type - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
                 }
             }
         }
         return rtn;
+    }
+
+    private static void fixBrokenRenderableClass(DiagramObject obj){
+        if(obj.renderableClass.equals("Entity")){
+            String correction;
+            if(obj.schemaClass.equals("SimpleEntity")) {
+                correction = "Chemical";
+                obj.renderableClass = correction;
+                LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] - Found Entity [" + obj.reactomeId + "] with schemaClass [" + obj.schemaClass + "]. Corrected to [" + correction + "]");
+            }else if(obj.schemaClass.equals("Complex")){
+                correction = "Complex";
+                obj.renderableClass = correction;
+                LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] - Found Entity [" + obj.reactomeId + "] with schemaClass [" + obj.schemaClass + "]. Corrected to [" + correction + "]");
+            }
+        }
     }
 
     /*

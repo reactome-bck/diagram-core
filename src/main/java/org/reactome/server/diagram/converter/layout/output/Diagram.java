@@ -1,8 +1,9 @@
 package org.reactome.server.diagram.converter.layout.output;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.graph.output.SubpathwayNode;
-import org.reactome.server.diagram.converter.layout.exceptions.DuplicateIdException;
+import org.reactome.server.diagram.converter.util.LogUtil;
 import org.reactome.server.diagram.converter.util.MapSet;
 import org.reactome.server.diagram.converter.util.ShapeBuilder;
 
@@ -84,8 +85,7 @@ public class Diagram {
                 }
             }
             if(participants.isEmpty()){
-                System.err.println("Subpathway without participants >> " + stableId + ": " + displayName);
-                logger.warn("Subpathway without participants >> " + stableId + ": " + displayName);
+                LogUtil.log(logger, Level.WARN, "[" + stableId + "] contains a subpathway without participants. ");
             }else {
                 shadows.add(new Shadow(getUniqueId(), subpathway, participants, colorId++));
             }
@@ -160,12 +160,12 @@ public class Diagram {
         return nodes.values();
     }
 
-    public boolean addNode(Node node) throws DuplicateIdException {
+    public boolean addNode(Node node) {
         if(isDisease==null || !isDisease || shouldBeIncluded(node.id)){
             this.nodes.add(node.reactomeId, node);
             DiagramObject duplicateEntry = this.objectMap.put(node.id, node);
             if(duplicateEntry!=null){
-                throw new DuplicateIdException("ERROR in: " + getStableId() + " - Nodes with duplicate diagram IDs >> " + node.displayName + " [" + node.id + "] <-> " + duplicateEntry.displayName + " [" + duplicateEntry.id + "]");
+                LogUtil.log(logger, Level.ERROR, "[" + getStableId() + "] contains Nodes with duplicate diagram IDs >>" + node.displayName + " [" + node.id + "] <-> " + duplicateEntry.displayName + " [" + duplicateEntry.id + "]");
             }
             setLastId(node);
             return true;
@@ -191,12 +191,12 @@ public class Diagram {
         return edges.values();
     }
 
-    public boolean addEdge(Edge edge) throws DuplicateIdException {
+    public boolean addEdge(Edge edge) {
         if(isDisease==null || !isDisease || shouldBeIncluded(edge.id)){
             this.edges.add(edge.reactomeId, edge);
             DiagramObject duplicateEntry = this.objectMap.put(edge.id, edge);
             if(duplicateEntry!=null){
-                throw new DuplicateIdException("ERROR in: " + getStableId() + " - Edges with duplicate diagram IDs >> " + edge.displayName + " [" + edge.id + "] <-> " + duplicateEntry.displayName + " [" + duplicateEntry.id + "]" );
+                LogUtil.log(logger, Level.ERROR, "[" + getStableId() + "] contains Edges with duplicate diagram IDs >>" + edge.displayName + " [" + edge.id + "] <-> " + duplicateEntry.displayName + " [" + duplicateEntry.id + "]");
             }
             setLastId(edge);
             return true;
@@ -330,7 +330,7 @@ public class Diagram {
 
         // Detect negative coordinates and print a warning message
         if(this.minX < 0 || this.minY < 0){
-            System.err.println(" >> WARNING: DiagramID: " + this.dbId + " Negative boundaries detected ... MinX: " + this.minX + "MinY: " + this.minY);
+            LogUtil.log(logger, Level.WARN, "[" + this.stableId + "] has negative boundaries ... MinX: " + this.minX + "MinY: " + this.minY);
         }
     }
 
@@ -544,8 +544,6 @@ public class Diagram {
             }
         }
     }
-
-
 
     /**
      * Checks if the particular diagram object is in any of the 5 lists (disease diagrams)

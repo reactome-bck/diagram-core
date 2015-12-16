@@ -1,14 +1,15 @@
 package org.reactome.server.diagram.converter.input.xml;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.input.model.Process;
+import org.reactome.server.diagram.converter.util.LogUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
@@ -20,19 +21,16 @@ import java.net.URL;
  */
 
 public class ProcessFactory {
-    //TODO: Refactor the getLogger method to use this one :)
+    //TODO: Refactor the getBuffer method to use this one :)
     private static Logger logger = Logger.getLogger(ProcessFactory.class.getName());
 
-
-    private JAXBContext jaxbContext = null;
     private Unmarshaller jaxbUnmarshaller = null;
     private XMLValidationEventHandler xmlValidationEventHandler = null;
 
     public ProcessFactory(String schemaLocation) {
 
         try {
-            jaxbContext = JAXBContext.newInstance(Process.class);
-
+            JAXBContext jaxbContext = JAXBContext.newInstance(Process.class);
             jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
             SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -46,83 +44,68 @@ public class ProcessFactory {
             } catch (SAXException e) {
                 e.printStackTrace();
             }
-
             jaxbUnmarshaller.setSchema(schema);
 
-            //TODO Remove dependency through setter or constructor parameter
             xmlValidationEventHandler = new XMLValidationEventHandler();
             jaxbUnmarshaller.setEventHandler(xmlValidationEventHandler);
         } catch (JAXBException e) {
-            e.printStackTrace();
-            logger.error(e.getMessage(), e);
+            LogUtil.logError(logger, "Error instantiating ProcessFactory:", e);
         }
     }
 
     public Process createProcess(String xmlContent, String stId){
         Process process = null;
         try {
-            ///TODO: store the path of the schema file as a propertie or as an input argument???
             process = deserializeXML(xmlContent, new StringBuilder());
 
             //Show the derialisation log
-            if (!getLogger().toString().isEmpty()) {
-                logger.error(" >> ERROR: in XML Deserialisation of [" + stId + "] " + process.getProperties().getIsChangedOrDisplayName().get(0));
-                logger.error(" >> " + getLogger().toString() + " << ");
+            if (!getBuffer().toString().isEmpty()) {
+                LogUtil.log(logger, Level.ERROR, "[" + stId + "] Error(s) in XML deserialisation of [" + process.getProperties().getIsChangedOrDisplayName().get(0) + "]:");
+                LogUtil.log(logger, Level.ERROR, " >> " + getBuffer().toString() + " << \n");
             }
-
         } catch (JAXBException e) {
-            e.printStackTrace();
-            logger.error(e.getMessage(), e);
+            LogUtil.logError(logger, "Error creating Process:", e);
         }
-
         return process;
     }
 
-    public Process deserializeXML(File inputFile, StringBuilder logger ) throws JAXBException {
-
-        if(logger!=null){ xmlValidationEventHandler.setInternalLogger( logger ); }
+    public Process deserializeXML(File inputFile, StringBuilder buffer ) throws JAXBException {
+        if(buffer!=null){ xmlValidationEventHandler.setInternalBuffer(buffer); }
         return deserializeXML(inputFile);
     }
 
-    public Process deserializeXML(String inputXMLString, StringBuilder logger ) throws JAXBException {
-
-        if(logger!=null){ xmlValidationEventHandler.setInternalLogger( logger ); }
+    public Process deserializeXML(String inputXMLString, StringBuilder buffer ) throws JAXBException {
+        if(buffer!=null){ xmlValidationEventHandler.setInternalBuffer(buffer); }
         return deserializeXML(inputXMLString);
     }
 
 
     private Process deserializeXML(String inputXMLContent) throws JAXBException {
-
         StringReader stringReader = new StringReader(inputXMLContent);
-        Process process = (Process) jaxbUnmarshaller.unmarshal(stringReader);
-        return process;
+        return (Process) jaxbUnmarshaller.unmarshal(stringReader);
     }
 
     private Process deserializeXML(File inputFile ) throws JAXBException {
-
-        Process process = (Process) jaxbUnmarshaller.unmarshal(inputFile);
-        return process;
+        return (Process) jaxbUnmarshaller.unmarshal(inputFile);
     }
 
 
-    public void setLogger(StringBuilder logger){
-        if(logger!=null && xmlValidationEventHandler!=null) {
-            xmlValidationEventHandler.setInternalLogger( logger );
+    public void setBuffer(StringBuilder buffer){
+        if(buffer!=null && xmlValidationEventHandler!=null) {
+            xmlValidationEventHandler.setInternalBuffer(buffer);
         }
     }
 
-    public StringBuilder getLogger(){
+    public StringBuilder getBuffer(){
         if(xmlValidationEventHandler!=null) {
-            return xmlValidationEventHandler.getInternalLogger();
+            return xmlValidationEventHandler.getInternalBuffer();
         }else{
             return null;
         }
     }
-    public void clearLogger(){
-        if(xmlValidationEventHandler!=null && xmlValidationEventHandler.getInternalLogger()!=null) {
-            xmlValidationEventHandler.getInternalLogger().setLength(0);
+    public void clearBuffer(){
+        if(xmlValidationEventHandler!=null && xmlValidationEventHandler.getInternalBuffer()!=null) {
+            xmlValidationEventHandler.getInternalBuffer().setLength(0);
         }
     }
-
-
 }
