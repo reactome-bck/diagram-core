@@ -175,11 +175,11 @@ public abstract class LayoutFactory {
             if(obj.schemaClass.equals("SimpleEntity")) {
                 correction = "Chemical";
                 obj.renderableClass = correction;
-                LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] - Found Entity [" + obj.reactomeId + "] with schemaClass [" + obj.schemaClass + "]. Corrected to [" + correction + "]");
+                LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains an Entity [" + obj.reactomeId + "] with schemaClass [" + obj.schemaClass + "]. Corrected to [" + correction + "]");
             }else if(obj.schemaClass.equals("Complex")){
                 correction = "Complex";
                 obj.renderableClass = correction;
-                LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] - Found Entity [" + obj.reactomeId + "] with schemaClass [" + obj.schemaClass + "]. Corrected to [" + correction + "]");
+                LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains an Entity [" + obj.reactomeId + "] with schemaClass [" + obj.schemaClass + "]. Corrected to [" + correction + "]");
             }
         }
     }
