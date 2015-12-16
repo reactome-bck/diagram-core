@@ -320,7 +320,7 @@ public class ShadowsUtil {
             Rectangle possibleLargestRectangle = reverseMap.firstEntry().getValue();
 
             /** remove the one with largest area, then we don't need to compare with the same one. **/
-            reverseMap.remove(area, possibleLargestRectangle);
+            reverseMap.remove(area);
 
             if(possibleLargestRectangle.width >= possibleLargestRectangle.height){
                 /** ok, larger area and wider **/
