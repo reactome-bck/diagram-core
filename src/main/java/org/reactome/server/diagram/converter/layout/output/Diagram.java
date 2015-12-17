@@ -336,7 +336,7 @@ public class Diagram {
 
         // Detect negative coordinates and print a warning message
         if(this.minX < 0 || this.minY < 0){
-            LogUtil.log(logger, Level.WARN, "[" + this.stableId + "] has negative boundaries ... MinX: " + this.minX + "MinY: " + this.minY);
+            LogUtil.log(logger, Level.WARN, "[" + this.stableId + "] has negative boundaries ... MinX: " + this.minX + " MinY: " + this.minY);
         }
     }
 
