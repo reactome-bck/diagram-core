@@ -29,11 +29,11 @@ public class SummaryItem {
 
     public SummaryItem(Type type, Node node) {
         this.type = type;
-        int yOffset = node.schemaClass.equals("SimpleEntity") ? 5 : 0;
+        int offset = node.schemaClass.equals("SimpleEntity") ? 5 : 0;
 
         Coordinate boxCentre = new Coordinate(
-                Math.round(node.prop.x + node.prop.width * type.relativeX),
-                Math.round(node.prop.y + node.prop.height * type.relativeY + yOffset)
+                Math.round(node.prop.x + node.prop.width * type.relativeX - offset),
+                Math.round(node.prop.y + node.prop.height * type.relativeY + offset)
         );
         //Interactors number depends on the selected source.
         // Here we only create an empty place holder
