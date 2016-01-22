@@ -29,10 +29,11 @@ public class SummaryItem {
 
     public SummaryItem(Type type, Node node) {
         this.type = type;
+        int yOffset = node.schemaClass.equals("SimpleEntity") ? 5 : 0;
 
         Coordinate boxCentre = new Coordinate(
                 Math.round(node.prop.x + node.prop.width * type.relativeX),
-                Math.round(node.prop.y + node.prop.height * type.relativeY)
+                Math.round(node.prop.y + node.prop.height * type.relativeY + yOffset)
         );
         this.shape = ShapeBuilder.createNodeSummaryItem(boxCentre, "1");
     }
