@@ -25,7 +25,9 @@ public class NodeAttachment {
         if (obj.getReactomeId() != null) {
             this.reactomeId = obj.getReactomeId().longValue();
             DatabaseObject object = DatabaseObjectFactory.getDatabaseObject(reactomeId);
-            this.description = object.getDisplayName();
+            if(object!=null) {
+                this.description = object.getDisplayName();
+            }
         }
 
         Float relativeX = obj.getRelativeX().floatValue();

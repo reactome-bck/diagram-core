@@ -23,7 +23,7 @@ public class Node extends NodeCommon {
 
     public List<NodeAttachment> nodeAttachments;
 
-    public List<SummaryItem> summaryItems;
+    public SummaryItem interactorsSummary;
 
     public List<Long> componentIds;
 
@@ -116,13 +116,11 @@ public class Node extends NodeCommon {
                 yy.add(nodeAttachment.shape.b.y);
             }
         }
-        if (summaryItems != null) {
-            for (SummaryItem summaryItem : summaryItems) {
-                xx.add(summaryItem.shape.minY);
-                yy.add(summaryItem.shape.minY);
-                xx.add(summaryItem.shape.maxX);
-                yy.add(summaryItem.shape.maxY);
-            }
+        if (interactorsSummary != null) {
+            xx.add(interactorsSummary.shape.minY);
+            yy.add(interactorsSummary.shape.minY);
+            xx.add(interactorsSummary.shape.maxX);
+            yy.add(interactorsSummary.shape.maxY);
         }
         // In case of a gene also include the arrow
         //noinspection Duplicates
@@ -153,9 +151,8 @@ public class Node extends NodeCommon {
     }
 
     public void setSummaryItems() {
-//        if (this.renderableClass.equals("Protein")) {// || this.renderableClass.equals("Chemical")) {
-//            this.summaryItems = new ArrayList<>();
-//            this.summaryItems.add(new SummaryItem(SummaryItem.Type.TR, this));
-//        }
+        if (this.renderableClass.equals("Protein") || this.renderableClass.equals("Chemical")) {
+            this.interactorsSummary = new SummaryItem(SummaryItem.Type.TR, this);
+        }
     }
 }

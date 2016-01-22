@@ -32,7 +32,7 @@ public class Shadow extends DiagramObject {
         setPoints(participants);
         setBoundaries();
         setPosition();
-        setProp();
+        setProp(); //By default the node properties are set to show text centered in the box
     }
 
     private void setPoints(List<DiagramObject> participants) {
@@ -91,8 +91,7 @@ public class Shadow extends DiagramObject {
     private void setProp(){
         this.prop.x = minX;
         this.prop.y = minY;
-        this.prop.width = maxX - minX; // (int) Math.floor(0.7 * (maxX - minX));
-        this.prop.height = maxY - minY; // (int) Math.floor(0.7 * (maxY - minY));
-//        this.prop.height = (int) Math.floor((maxY - minY) / 1.5);
+        this.prop.width = maxX - minX;
+        this.prop.height = maxY - minY;
     }
 }
