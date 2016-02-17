@@ -22,7 +22,7 @@ import org.reactome.server.diagram.converter.util.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.util.*;
+import java.util.Collection;
 
 /**
  * This tool converts XML files containing pathway diagrams into JSON files
@@ -168,7 +168,7 @@ public class Convertor2JsonTool {
 
             for (String id : target) {
                 try {
-                    GKInstance pathway = diagramFetcher.getPathwayInstance(Long.parseLong(id));
+                    GKInstance pathway = diagramFetcher.getInstance(id);
                     String pathwayStableId = diagramFetcher.getPathwayStableId(pathway);
                     LogUtil.log(logger, Level.TRACE, " >> Pathway Diagram ID: " + pathway.getDBID() + " Stable ID: " + pathwayStableId);
 
