@@ -37,6 +37,9 @@ java -jar target/tools-jar-with-dependencies.jar Convert
      -r list_of_trivial_molecules
      -v 
 ```
+
+Please note that the current list of trivial molecules can be found in [./src/main/resources/trivialchemicals.txt](./src/main/resources/trivialchemicals.txt)
+
 e.g
 
 ```
@@ -65,7 +68,7 @@ java -jar target/tools-jar-with-dependencies.jar Convert
      -t:5654738,5655291,2219530,5637815
      -v 
 ```
-##### Important Notice ?
+##### Important Notice
 In case of connection to a remote server via ssh there might be a "No X11 DISPLAY variable was set" error. Then try unsetting the DISPLAY using the following command:
 
 ```
