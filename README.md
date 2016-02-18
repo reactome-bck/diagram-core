@@ -2,7 +2,7 @@
 #### What is the Diagram Core?
 The Diagram core contains a collection of server-side tools, mainly focusing on the generation of a set of JSON files to be consumed by the Pathway Diagram Viewer v3.0. As illustrated in the following figure, the Diagram-core utilises the Reactome-Core to generate two different types of files for every single pathway diagram. The first file includes layout information (nodes, edges, co-ordinates, glyphs, names, shades, etc.), while the second file includes a graph of the pathway diagram and all its contained entities.
 
-![Overview of the Diagram-Core](http://drive.google.com/open?id=0By02yDfmCFpraElka1lXaDBXUGM "Overview of the Diagram-Core")
+![Overview of the Diagram-Core](./doc/diagramCore.png "Overview of the Diagram-Core")
 
 #### How do I generate all pathway diagrams ?
 ** Maven Setup: https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html.
@@ -37,6 +37,9 @@ java -jar target/tools-jar-with-dependencies.jar Convert
      -r list_of_trivial_molecules
      -v 
 ```
+
+Please note that the current list of trivial molecules can be found in [./src/main/resources/trivialchemicals.txt](./src/main/resources/trivialchemicals.txt)
+
 e.g
 
 ```
@@ -64,4 +67,10 @@ java -jar target/tools-jar-with-dependencies.jar Convert
      -r /Users/reactome/diagram/trivialchemicals.txt
      -t:5654738,5655291,2219530,5637815
      -v 
+```
+##### Important Notice
+In case of connection to a remote server via ssh there might be a "No X11 DISPLAY variable was set" error. Then try unsetting the DISPLAY using the following command:
+
+```
+unset DISPLAY
 ```

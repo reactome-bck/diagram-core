@@ -29,8 +29,8 @@ public class Diagram {
     private Boolean forNormalDraw = Boolean.TRUE;
     private Long lastId = 0L;
 
-    private Set<Long> diseaseComponents;
-    private Set<Long> lofNodes;
+    private transient Set<Long> diseaseComponents;
+    private transient Set<Long> lofNodes;
 
     private Map<Long, DiagramObject> objectMap = new HashMap<>();
 
@@ -146,16 +146,8 @@ public class Diagram {
         this.forNormalDraw = forNormalDraw;
     }
 
-    public Set<Long> getDiseaseComponents() {
-        return diseaseComponents;
-    }
-
     public void setDiseaseComponents(Set<Long> diseaseComponents) {
         this.diseaseComponents = diseaseComponents;
-    }
-
-    public Set<Long> getLofNodes() {
-        return lofNodes;
     }
 
     public void setLofNodes(Set<Long> lofNodes) {
