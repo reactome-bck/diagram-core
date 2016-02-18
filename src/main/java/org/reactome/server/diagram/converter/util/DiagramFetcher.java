@@ -1,5 +1,7 @@
 package org.reactome.server.diagram.converter.util;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.pathwaylayout.DiagramGeneratorFromDB;
@@ -8,6 +10,8 @@ import org.gk.persistence.MySQLAdaptor;
 import org.reactome.core.factory.DatabaseObjectFactory;
 import org.reactome.core.model.Pathway;
 import org.reactome.core.model.StableIdentifier;
+import org.reactome.server.diagram.converter.exception.DiagramNotFoundException;
+import org.reactome.server.diagram.converter.tools.DiagramConverter;
 
 import java.util.Collection;
 
@@ -16,20 +20,25 @@ import java.util.Collection;
  */
 public class DiagramFetcher {
 
+    private static Logger logger = Logger.getLogger(DiagramFetcher.class.getName());
     public MySQLAdaptor dba;
 
     public DiagramFetcher(MySQLAdaptor dba) {
         this.dba = dba;
     }
 
-    public GKInstance getInstance(String identifier) throws Exception {
+    public GKInstance getInstance(String identifier) throws DiagramNotFoundException {
         identifier = identifier.trim().split("\\.")[0];
-        if (identifier.startsWith("REACT")){
-            return getInstance(dba.fetchInstanceByAttribute(ReactomeJavaConstants.StableIdentifier, "oldIdentifier", "=", identifier));
-        }else if (identifier.startsWith("R-")) {
-            return getInstance(dba.fetchInstanceByAttribute(ReactomeJavaConstants.StableIdentifier, ReactomeJavaConstants.identifier, "=", identifier));
-        } else {
-            return dba.fetchInstance(Long.parseLong(identifier));
+        try {
+            if (identifier.startsWith("REACT")) {
+                return getInstance(dba.fetchInstanceByAttribute(ReactomeJavaConstants.StableIdentifier, "oldIdentifier", "=", identifier));
+            } else if (identifier.startsWith("R-")) {
+                return getInstance(dba.fetchInstanceByAttribute(ReactomeJavaConstants.StableIdentifier, ReactomeJavaConstants.identifier, "=", identifier));
+            } else {
+                return dba.fetchInstance(Long.parseLong(identifier));
+            }
+        } catch (Exception e){
+            throw new DiagramNotFoundException("No diagram found for " + identifier);
         }
     }
 
@@ -41,9 +50,17 @@ public class DiagramFetcher {
 
     public String getPathwayStableId(GKInstance pathway) throws Exception{
         Pathway p = DatabaseObjectFactory.getDatabaseObject(pathway);
-        StableIdentifier stableIdentifier = p.getStableIdentifier().load();
-        //System.out.println("Pathway Stable Identifier: " + stableIdentifier.getIdentifier());
-        return stableIdentifier.getIdentifier();
+        try {
+            StableIdentifier stableIdentifier = p.getStableIdentifier().load();
+            return stableIdentifier.getIdentifier();
+        } catch (Exception e) {
+            if(DiagramConverter.RECOVER_FROM_MISSING_ST_ID) {
+                return "" + p.getDbId();
+            }
+            String msg = "No stable identifier found for pathway " + p.getDbId();
+            LogUtil.log(logger, Level.ERROR, msg);
+            throw new Exception(msg);
+        }
     }
 
     @SuppressWarnings("unused")

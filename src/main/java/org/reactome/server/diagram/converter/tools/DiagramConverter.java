@@ -6,6 +6,8 @@ import org.gk.model.GKInstance;
 import org.gk.persistence.MySQLAdaptor;
 import org.reactome.core.controller.GKInstance2ModelObject;
 import org.reactome.core.factory.DatabaseObjectFactory;
+import org.reactome.server.diagram.converter.exception.DiagramNotFoundException;
+import org.reactome.server.diagram.converter.exception.MissingStableIdentifierException;
 import org.reactome.server.diagram.converter.graph.DiagramGraphFactory;
 import org.reactome.server.diagram.converter.graph.output.Graph;
 import org.reactome.server.diagram.converter.input.model.Process;
@@ -21,6 +23,8 @@ import org.reactome.server.diagram.converter.util.TrivialChemicals;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramConverter {
+
+    public static final boolean RECOVER_FROM_MISSING_ST_ID = false;
 
     private static Logger logger = Logger.getLogger(DiagramConverter.class.getName());
 
@@ -44,7 +48,7 @@ public class DiagramConverter {
         }
     }
 
-    public Diagram getDiagram(String identifier) throws Exception {
+    public Diagram getDiagram(String identifier) throws DiagramNotFoundException, MissingStableIdentifierException {
         GKInstance pathway = diagramFetcher.getInstance(identifier);
         Diagram diagram = getDiagram(pathway);
         if (diagram != null) {
@@ -70,18 +74,18 @@ public class DiagramConverter {
     }
 
     @SuppressWarnings("Duplicates")
-    private Diagram getDiagram(GKInstance pathway) {
-        String stId = null;
+    private Diagram getDiagram(GKInstance pathway) throws MissingStableIdentifierException, DiagramNotFoundException {
         try {
-            stId = diagramFetcher.getPathwayStableId(pathway);
+            String stId  = diagramFetcher.getPathwayStableId(pathway);
             String xml = diagramFetcher.getPathwayDiagramXML(pathway);
             if (xml != null) {
                 Process process = processFactory.createProcess(xml, stId);
                 return LayoutFactory.getDiagramFromProcess(process, pathway.getDBID(), stId);
             }
         } catch (Exception e) {
-            LogUtil.logError(logger,"[" + stId + "] conversion failed. The following error occurred while converting pathway diagram:", e);
+            LogUtil.logError(logger,"Conversion failed. The following error occurred while converting the diagram for " + pathway.getDisplayName(), e);
+            throw new MissingStableIdentifierException("Conversion failed for the diagram of " + pathway.getDisplayName());
         }
-        return null;
+        throw new DiagramNotFoundException("Diagram for " + pathway.getDisplayName() + " couldn't be found");
     }
 }

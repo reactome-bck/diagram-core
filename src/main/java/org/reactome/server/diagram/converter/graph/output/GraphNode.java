@@ -33,7 +33,7 @@ public class GraphNode {
             GKInstance stableIdentifier = (GKInstance) event.getAttributeValue(ReactomeJavaConstants.stableIdentifier);
             this.stId = (String) stableIdentifier.getAttributeValue(ReactomeJavaConstants.identifier);
         } catch (Exception e) {
-            e.printStackTrace();
+            this.stId = "" + dbId;
         }
     }
 }

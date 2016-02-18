@@ -1,7 +1,9 @@
 package org.reactome.server.diagram.converter.graph.model;
 
+import org.apache.log4j.Level;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
+import org.reactome.server.diagram.converter.util.LogUtil;
 
 import java.util.*;
 
@@ -124,10 +126,10 @@ public class PhysicalEntityNode {
             GKInstance stableIdentifier = (GKInstance) physicalEntity.getAttributeValue(ReactomeJavaConstants.stableIdentifier);
             this.stId = (String) stableIdentifier.getAttributeValue(ReactomeJavaConstants.identifier);
         } catch (Exception e) {
-            this.stId = "R-GHOST-" + physicalEntity.getDBID();
+            this.stId = "" + physicalEntity.getDBID();
             // Important
             // This is because the stable identifiers are not working properly
-            logger.warn("Error setting stable Identifier for " +  physicalEntity.getDBID());
+            LogUtil.log(logger, Level.ERROR, "No stable identifier found for PhysicalEntity " + physicalEntity.getDBID());
         }
     }
 
