@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class EdgeCommon extends DiagramObject {
 
-    public Boolean isChanged;
     public String reactionType;
     public String interactionType;
 
@@ -60,7 +59,6 @@ public class EdgeCommon extends DiagramObject {
                     break;
             }
         }
-        this.isChanged = (Boolean) this.properties.get("isChanged");
 
         // Set the shape of the reaction
         this.setReactionShape();

@@ -19,8 +19,6 @@ import java.util.List;
 @XmlRootElement
 public class Node extends NodeCommon {
 
-    public Boolean hideComponents;
-
     public List<NodeAttachment> nodeAttachments;
 
     public SummaryItem interactorsSummary;
@@ -38,9 +36,6 @@ public class Node extends NodeCommon {
         super(obj);
         for (Method method : obj.getClass().getMethods()) {
             switch (method.getName()) {
-                case "isHideComponents":
-                    this.hideComponents = getBoolean(method, obj);
-                    break;
                 case "getNodeAttachments":
                     this.nodeAttachments = getNodeAttachments(method, obj);
                     break;
