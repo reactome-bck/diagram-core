@@ -18,6 +18,9 @@ public class NodeAttachment {
     public String description;
     public Shape shape;
 
+    public transient Float relativeX;
+    public transient Float relativeY;
+
     public NodeAttachment(OrgGkRenderRenderableFeature obj, Node node) {
         this.label = obj.getLabel();
         this.description = obj.getDescription();
@@ -30,8 +33,8 @@ public class NodeAttachment {
             }
         }
 
-        Float relativeX = obj.getRelativeX().floatValue();
-        Float relativeY = obj.getRelativeY().floatValue();
+        relativeX = obj.getRelativeX().floatValue();
+        relativeY = obj.getRelativeY().floatValue();
         Coordinate boxCentre = new Coordinate(
                 Math.round(node.prop.x + node.prop.width * relativeX),
                 Math.round(node.prop.y + node.prop.height * relativeY)

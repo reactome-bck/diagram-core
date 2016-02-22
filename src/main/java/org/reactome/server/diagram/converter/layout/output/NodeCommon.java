@@ -14,6 +14,7 @@ import java.util.List;
 public abstract class NodeCommon extends DiagramObject {
 
     public NodeProperties prop = new NodeProperties();
+    public NodeProperties innerProp;
     public Coordinate textPosition;
     public Bound insets;
 

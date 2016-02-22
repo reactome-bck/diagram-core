@@ -5,6 +5,7 @@ import org.reactome.server.diagram.converter.input.model.OrgGkRenderRenderableFe
 import org.reactome.server.diagram.converter.util.ShapeBuilder;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Console;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -48,6 +49,9 @@ public class Node extends NodeCommon {
 
         // Calculate the arrow shape of the Gene
         this.setEndShape();
+
+        //Set the inner box
+        this.setInnerBox();
 
         // Get rid of position as it simply points to the center of the node
         //position = null; //TODO Enable it
@@ -142,6 +146,34 @@ public class Node extends NodeCommon {
                     this.prop.y + 2);
             // Shape is a filled arrow by default
             this.endShape = new Shape(points.get(0), points.get(1), points.get(2), Boolean.FALSE, Shape.Type.ARROW);
+        }
+    }
+
+    /***
+     * Calculates the inner box of a Node taking into account
+     * any NodeAttachements
+     */
+    private void setInnerBox() {
+        if (nodeAttachments!=null){
+            int topMargin = 0;
+            int leftMargin = 0;
+            int rightMargin = 0;
+            int bottomMargin = 0;
+
+            for (NodeAttachment attachment : nodeAttachments) {
+                if(attachment.relativeY == 0) topMargin = 6;
+                if(attachment.relativeY == 1) bottomMargin = 6;
+                if(attachment.relativeX == 0) leftMargin = 6;
+                if(attachment.relativeX == 1) rightMargin = 6;
+            }
+
+            if(topMargin != 0 || bottomMargin != 0 || leftMargin != 0 || rightMargin != 0) {
+                innerProp = new NodeProperties();
+                innerProp.x = prop.x + leftMargin;
+                innerProp.y = prop.y + topMargin;
+                innerProp.width = prop.width - (leftMargin + rightMargin);
+                innerProp.height = prop.height - (topMargin + bottomMargin);
+            }
         }
     }
 
