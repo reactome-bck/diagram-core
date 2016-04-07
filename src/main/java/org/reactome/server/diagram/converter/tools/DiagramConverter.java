@@ -24,7 +24,7 @@ import org.reactome.server.diagram.converter.util.TrivialChemicals;
  */
 public class DiagramConverter {
 
-    public static final boolean RECOVER_FROM_MISSING_ST_ID = false;
+    public static final boolean RECOVER = false;
 
     private static Logger logger = Logger.getLogger(DiagramConverter.class.getName());
 

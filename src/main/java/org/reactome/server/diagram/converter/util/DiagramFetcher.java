@@ -54,7 +54,7 @@ public class DiagramFetcher {
             StableIdentifier stableIdentifier = p.getStableIdentifier().load();
             return stableIdentifier.getIdentifier();
         } catch (Exception e) {
-            if(DiagramConverter.RECOVER_FROM_MISSING_ST_ID) {
+            if(DiagramConverter.RECOVER) {
                 return "" + p.getDbId();
             }
             String msg = "No stable identifier found for pathway " + p.getDbId();
