@@ -480,12 +480,11 @@ public class Diagram {
     }
 
     public void setEntitySummaries(){
-        if(nodes==null || nodes.isEmpty()) {
-            throw new RuntimeException("The nodes have not been initialised yet");
-        }
-        for (Node node : nodes.values()) {
-            if(node.isFadeOut!=null) continue;
-            node.setSummaryItems();
+        if(nodes!=null) {
+            for (Node node : nodes.values()) {
+                if (node.isFadeOut != null) continue;
+                node.setSummaryItems();
+            }
         }
     }
 

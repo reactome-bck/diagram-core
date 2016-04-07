@@ -169,18 +169,24 @@ public abstract class LayoutFactory {
         return rtn;
     }
 
+    private static final Set<String> SETS_TYPES = new HashSet<>(Arrays.asList("OpenSet", "CandidateSet", "DefineSet", "DefinedSet", "EntitySet"));
+
     private static void fixBrokenRenderableClass(DiagramObject obj){
-        if(obj.renderableClass.equals("Entity")){
-            String correction;
-            if(obj.schemaClass.equals("SimpleEntity")) {
-                correction = "Chemical";
-                obj.renderableClass = correction;
-                LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains an Entity [" + obj.reactomeId + "] with schemaClass [" + obj.schemaClass + "]. Corrected to [" + correction + "]");
-            }else if(obj.schemaClass.equals("Complex")){
-                correction = "Complex";
-                obj.renderableClass = correction;
-                LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains an Entity [" + obj.reactomeId + "] with schemaClass [" + obj.schemaClass + "]. Corrected to [" + correction + "]");
-            }
+        String correction = "";
+        if (obj.schemaClass.equals("SimpleEntity") && !obj.renderableClass.equals("Chemical")) {
+            correction = "Chemical";
+        } else if (obj.schemaClass.equals("OtherEntity") && !obj.renderableClass.equals("Entity")) {
+            correction = "Entity";
+        } else if (obj.schemaClass.equals("Complex") && !obj.renderableClass.equals("Complex")) {
+            correction = "Complex";
+        } else if (obj.schemaClass.equals("GenomeEncodedEntity") && !obj.renderableClass.equals("Entity")) {
+            correction = "Entity";
+        } else if (SETS_TYPES.contains(obj.schemaClass) && !obj.renderableClass.equals("EntitySet")) {
+            correction = "EntitySet";
+        }
+        if (!correction.isEmpty()) {
+            LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains [" + obj.reactomeId + "] with RenderableClass: [" + obj.renderableClass + "] but this object has schemaClass [" + obj.schemaClass + "]. RenderableClass corrected to [" + correction + "]");
+            obj.renderableClass = correction;
         }
     }
 
