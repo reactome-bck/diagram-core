@@ -22,25 +22,22 @@ public abstract class JsonWriter {
     static {
         mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//        mapper.disable(SerializationFeature.INDENT_OUTPUT);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        enableIntent(true);
+    }
+
+    public static void enableIntent(boolean enableIntent) {
+        if (enableIntent) {
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        } else {
+            mapper.disable(SerializationFeature.INDENT_OUTPUT);
+        }
     }
 
     public static void serialiseDiagram(Diagram diagram, String outputDirectory){
         File outJSONFile = new File(outputDirectory + File.separator + diagram.getDbId() + ".json");
         File outLinkedFile = new File(outputDirectory + File.separator + diagram.getStableId() + ".json");
         try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            mapper.writeValue(byteArrayOutputStream, diagram);
-
-            FileOutputStream fileOutputStream = new FileOutputStream(outJSONFile, false);
-            byteArrayOutputStream.writeTo(fileOutputStream);
-
-            //Create symbolicLink
-            if (!Files.exists(Paths.get(outLinkedFile.getAbsolutePath()))) {
-                Files.createSymbolicLink(Paths.get(outLinkedFile.getAbsolutePath()), Paths.get(outJSONFile.getName()));
-            }
-
+            serialise(diagram, outJSONFile, outLinkedFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,21 +46,23 @@ public abstract class JsonWriter {
     public static void serialiseGraph(Graph graph, String outputDirectory){
         File outGraphFile = new File(outputDirectory + File.separator + graph.getDbId() + ".graph.json");
         File outLinkedFile = new File(outputDirectory + File.separator + graph.getStId() + ".graph.json");
-
         try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            mapper.writeValue(byteArrayOutputStream, graph);
-
-            FileOutputStream fileOutputStream = new FileOutputStream(outGraphFile, false);
-            byteArrayOutputStream.writeTo(fileOutputStream);
-
-            //Create symbolicLink
-            if (!Files.exists(Paths.get(outLinkedFile.getAbsolutePath()))) {
-                Files.createSymbolicLink(Paths.get(outLinkedFile.getAbsolutePath()), Paths.get(outGraphFile.getName()));
-            }
-
+            serialise(graph, outGraphFile, outLinkedFile);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void serialise(Object obj, File file, File linkedFile) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        mapper.writeValue(byteArrayOutputStream, obj);
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file, false);
+        byteArrayOutputStream.writeTo(fileOutputStream);
+
+        //Create symbolicLink
+        if (!Files.exists(Paths.get(linkedFile.getAbsolutePath()))) {
+            Files.createSymbolicLink(Paths.get(linkedFile.getAbsolutePath()), Paths.get(file.getName()));
         }
     }
 }
