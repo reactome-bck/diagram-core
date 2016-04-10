@@ -1,8 +1,10 @@
-package org.reactome.server.diagram.converter.input.xml;
+package org.reactome.server.diagram.converter.input;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.input.model.Process;
+import org.reactome.server.diagram.converter.input.xml.SchemaProvider;
+import org.reactome.server.diagram.converter.input.xml.XMLValidationEventHandler;
 import org.reactome.server.diagram.converter.util.LogUtil;
 import org.xml.sax.SAXException;
 
