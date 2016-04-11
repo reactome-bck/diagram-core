@@ -14,6 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
+ * This class is responsible for storing the diagram and the graph in JSON format.
+ * For every file we create 2 files: one under the name of the pathway's DBID and a second
+ * one having the name of the pathway's Stable Identifier. Please note that the second file
+ * is only a symbolic link to the first one.
+ * This functionality is used only when we create all diagrams (and graphs) during release.
+ *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public abstract class JsonWriter {
