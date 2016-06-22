@@ -1,4 +1,4 @@
-package org.reactome.server.diagram.converter.util.partitioner;
+package org.reactome.server.diagram.converter.util.shadows.partitioner;
 
 /**
  * This is just a helper POJO for returning an appropriate object

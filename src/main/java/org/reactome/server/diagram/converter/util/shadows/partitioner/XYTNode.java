@@ -1,4 +1,4 @@
-package org.reactome.server.diagram.converter.util.partitioner;
+package org.reactome.server.diagram.converter.util.shadows.partitioner;
 
 public class XYTNode {
     private int x;

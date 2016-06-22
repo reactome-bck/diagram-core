@@ -1,7 +1,7 @@
 package org.reactome.server.diagram.converter.layout.output;
 
 import org.reactome.server.diagram.converter.graph.output.SubpathwayNode;
-import org.reactome.server.diagram.converter.util.ShadowColours;
+import org.reactome.server.diagram.converter.util.shadows.ShadowColours;
 
 import java.util.ArrayList;
 import java.util.Collections;

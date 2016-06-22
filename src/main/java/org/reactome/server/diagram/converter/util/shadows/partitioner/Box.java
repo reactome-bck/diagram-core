@@ -1,4 +1,4 @@
-package org.reactome.server.diagram.converter.util.partitioner;
+package org.reactome.server.diagram.converter.util.shadows.partitioner;
 
 import java.util.LinkedList;
 import java.util.List;

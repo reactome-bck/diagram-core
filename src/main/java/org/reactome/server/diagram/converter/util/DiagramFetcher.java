@@ -48,7 +48,7 @@ public class DiagramFetcher {
         return (GKInstance) dba.fetchInstanceByAttribute(ReactomeJavaConstants.DatabaseObject, ReactomeJavaConstants.stableIdentifier, "=", stId).iterator().next();
     }
 
-    public String getPathwayStableId(GKInstance pathway) throws Exception{
+    public String getPathwayStableId(GKInstance pathway) throws Exception {
         Pathway p = DatabaseObjectFactory.getDatabaseObject(pathway);
         try {
             StableIdentifier stableIdentifier = p.getStableIdentifier().load();

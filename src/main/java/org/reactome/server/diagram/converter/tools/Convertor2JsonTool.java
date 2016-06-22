@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
-import org.reactome.core.controller.DatabaseObjectHelper;
 import org.reactome.core.controller.GKInstance2ModelObject;
 import org.reactome.core.factory.DatabaseObjectFactory;
 import org.reactome.core.model.Pathway;
@@ -15,7 +14,7 @@ import org.reactome.server.diagram.converter.Main;
 import org.reactome.server.diagram.converter.graph.DiagramGraphFactory;
 import org.reactome.server.diagram.converter.graph.output.Graph;
 import org.reactome.server.diagram.converter.input.model.Process;
-import org.reactome.server.diagram.converter.input.xml.ProcessFactory;
+import org.reactome.server.diagram.converter.input.ProcessFactory;
 import org.reactome.server.diagram.converter.layout.LayoutFactory;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.util.*;
@@ -36,7 +35,6 @@ public class Convertor2JsonTool {
     private static DiagramFetcher diagramFetcher;
     private static ProcessFactory processFactory;
     private static DiagramGraphFactory graphFactory;
-
     private static TrivialChemicals trivialChemicals;
 
     public static void main(String[] args) throws Exception {
@@ -89,8 +87,8 @@ public class Convertor2JsonTool {
         GKInstance2ModelObject converter = context.getBean(GKInstance2ModelObject.class);
         DatabaseObjectFactory.initializeFactory(dba, converter);
 
-        DatabaseObjectHelper helper = context.getBean(DatabaseObjectHelper.class);
-        helper.setDba(dba);
+//        DatabaseObjectHelper helper = context.getBean(DatabaseObjectHelper.class);
+//        helper.setDba(dba);
         diagramFetcher = new DiagramFetcher(dba);
         graphFactory = new DiagramGraphFactory(dba);
         processFactory = new ProcessFactory("/process_schema.xsd");

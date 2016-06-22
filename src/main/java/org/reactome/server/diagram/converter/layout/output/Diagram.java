@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.graph.output.SubpathwayNode;
 import org.reactome.server.diagram.converter.util.LogUtil;
 import org.reactome.server.diagram.converter.util.MapSet;
-import org.reactome.server.diagram.converter.util.ShadowsUtil;
+import org.reactome.server.diagram.converter.util.shadows.ShadowsUtil;
 import org.reactome.server.diagram.converter.util.ShapeBuilder;
 
 import java.util.*;

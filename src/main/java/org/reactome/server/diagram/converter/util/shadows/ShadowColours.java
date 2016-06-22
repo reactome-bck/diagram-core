@@ -1,4 +1,4 @@
-package org.reactome.server.diagram.converter.util;
+package org.reactome.server.diagram.converter.util.shadows;
 
 import java.util.ArrayList;
 import java.util.List;
