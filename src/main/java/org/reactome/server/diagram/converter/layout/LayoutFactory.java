@@ -8,6 +8,7 @@ import org.reactome.server.diagram.converter.input.model.Properties;
 import org.reactome.server.diagram.converter.layout.output.*;
 import org.reactome.server.diagram.converter.util.LogUtil;
 
+import java.io.Console;
 import java.io.Serializable;
 import java.util.*;
 
@@ -53,6 +54,9 @@ public abstract class LayoutFactory {
                     outputDiagram.addCompartment((Compartment) nodeCommon);
                 }
             }
+
+            //Check for empty diagrams and log them
+            outputDiagram.checkIfEmpty();
 
             //Parse Edges
             for (EdgeCommon edgeCommon : extractEdgesList(inputProcess.getEdges())) {
@@ -116,6 +120,11 @@ public abstract class LayoutFactory {
                         clazz.equals(OrgGkRenderRenderableEntity.class)     ||
                         clazz.equals(OrgGkRenderRenderableGene.class) ){
                     Node node = new Node(inputNode);
+                    // Sometimes a node does not have a schemaClass
+                    if(node.schemaClass==null) {
+                        LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains entity [dbid:" + node.reactomeId + "] without a schemaClass");
+                        continue;
+                    }
                     fixBrokenRenderableClass(node);
                     rtn.add(node);
                 }else if(clazz.equals(OrgGkRenderNote.class) ){

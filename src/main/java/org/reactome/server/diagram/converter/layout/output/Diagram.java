@@ -266,6 +266,14 @@ public class Diagram {
         return maxY;
     }
 
+    public boolean checkIfEmpty() {
+        boolean rtn = nodes.isEmpty() && !compartments.isEmpty();
+        if(rtn) {
+            LogUtil.log(logger, Level.WARN, "[" + stableId + "] is empty and does not contain any entity apart from compartments");
+        }
+        return rtn;
+    }
+
     public void fadeOutNormalComponents(){
         if(     (isDisease != null && isDisease) &&
                 (forNormalDraw == false) &&
