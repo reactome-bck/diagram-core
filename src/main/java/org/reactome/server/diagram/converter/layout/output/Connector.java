@@ -105,7 +105,7 @@ public class Connector {
                         break;
                     case OUTPUT:
                         // Use the last segment of the backbone
-                        segment = edge.segments.get(0);
+                        segment = edge.segments.get(edge.segments.size()-1);
                         break;
                     default:
                         System.err.println(" >> Segment was not properly placed");
