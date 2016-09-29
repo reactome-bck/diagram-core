@@ -3,10 +3,12 @@ package org.reactome.server.diagram.converter.layout.output;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.graph.output.SubpathwayNode;
-import org.reactome.server.diagram.converter.util.LogUtil;
+import org.reactome.server.diagram.converter.util.report.LogUtil;
 import org.reactome.server.diagram.converter.util.MapSet;
 import org.reactome.server.diagram.converter.util.ShadowsUtil;
 import org.reactome.server.diagram.converter.util.ShapeBuilder;
+import org.reactome.server.diagram.converter.util.report.LogEntry;
+import org.reactome.server.diagram.converter.util.report.LogEntryType;
 
 import java.util.*;
 
@@ -86,7 +88,8 @@ public class Diagram {
                 }
             }
             if(participants.isEmpty()){
-                LogUtil.log(logger, Level.WARN, "[" + stableId + "] contains a subpathway without participants. ");
+                String message = "[" + stableId + "] contains a subpathway without participants. ";
+                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.SUBPATHWAY_WITHOUT_PARTICIPANTS, stableId, message));
             }else {
                 shadows.add(new Shadow(getUniqueId(), subpathway, participants, colorId++));
             }
@@ -269,7 +272,8 @@ public class Diagram {
     public boolean checkIfEmpty() {
         boolean rtn = nodes.isEmpty() && !compartments.isEmpty();
         if(rtn) {
-            LogUtil.log(logger, Level.WARN, "[" + stableId + "] is empty and does not contain any entity apart from compartments");
+            String message = "[" + stableId + "] is empty and does not contain any entity apart from compartments";
+            LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.DIAGRAM_EMPTY, stableId, message));
         }
         return rtn;
     }

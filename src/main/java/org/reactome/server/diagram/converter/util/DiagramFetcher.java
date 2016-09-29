@@ -12,6 +12,7 @@ import org.reactome.core.model.Pathway;
 import org.reactome.core.model.StableIdentifier;
 import org.reactome.server.diagram.converter.exception.DiagramNotFoundException;
 import org.reactome.server.diagram.converter.tools.DiagramConverter;
+import org.reactome.server.diagram.converter.util.report.LogUtil;
 
 import java.util.Collection;
 

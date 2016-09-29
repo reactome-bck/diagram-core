@@ -3,7 +3,7 @@ package org.reactome.server.diagram.converter.graph.model;
 import org.apache.log4j.Level;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
-import org.reactome.server.diagram.converter.util.LogUtil;
+import org.reactome.server.diagram.converter.util.report.LogUtil;
 
 import java.util.*;
 

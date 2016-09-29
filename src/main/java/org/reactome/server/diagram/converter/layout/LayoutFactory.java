@@ -6,9 +6,10 @@ import org.reactome.server.diagram.converter.input.model.*;
 import org.reactome.server.diagram.converter.input.model.Process;
 import org.reactome.server.diagram.converter.input.model.Properties;
 import org.reactome.server.diagram.converter.layout.output.*;
-import org.reactome.server.diagram.converter.util.LogUtil;
+import org.reactome.server.diagram.converter.util.report.LogUtil;
+import org.reactome.server.diagram.converter.util.report.LogEntry;
+import org.reactome.server.diagram.converter.util.report.LogEntryType;
 
-import java.io.Console;
 import java.io.Serializable;
 import java.util.*;
 
@@ -194,7 +195,8 @@ public abstract class LayoutFactory {
             correction = "EntitySet";
         }
         if (!correction.isEmpty()) {
-            LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains [" + obj.reactomeId + "] with RenderableClass: [" + obj.renderableClass + "] but this object has schemaClass [" + obj.schemaClass + "]. RenderableClass corrected to [" + correction + "]");
+            String message = "[" + outputDiagram.getStableId() + "] contains [" + obj.reactomeId + "] with RenderableClass: [" + obj.renderableClass + "] but this object has schemaClass [" + obj.schemaClass + "]. RenderableClass corrected to [" + correction + "]";
+            LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.RENDERABLECLASS_MISSMATCH, outputDiagram.getStableId(), "" + obj.reactomeId, message));
             obj.renderableClass = correction;
         }
     }

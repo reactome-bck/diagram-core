@@ -19,6 +19,7 @@ import org.reactome.server.diagram.converter.input.xml.ProcessFactory;
 import org.reactome.server.diagram.converter.layout.LayoutFactory;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.util.*;
+import org.reactome.server.diagram.converter.util.report.LogUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -180,6 +181,9 @@ public class Convertor2JsonTool {
                 }
             }
         }
+        // Generate the CSV reports
+        LogUtil.writeCSVFiles();
+
         // send all email reports
         LogUtil.sendEmailReports();
     }

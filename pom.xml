@@ -135,6 +135,13 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <!-- CSV support -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>3.7</version>
+        </dependency>
+
         <!-- Reactome Core -->
         <dependency>
             <groupId>org.reactome.server</groupId>
@@ -159,8 +166,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>

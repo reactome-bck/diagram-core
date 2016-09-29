@@ -16,7 +16,7 @@ import org.reactome.server.diagram.converter.layout.LayoutFactory;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.util.DiagramFetcher;
 import org.reactome.server.diagram.converter.util.FileUtil;
-import org.reactome.server.diagram.converter.util.LogUtil;
+import org.reactome.server.diagram.converter.util.report.LogUtil;
 import org.reactome.server.diagram.converter.util.TrivialChemicals;
 
 /**
