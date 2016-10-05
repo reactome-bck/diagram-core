@@ -17,7 +17,7 @@ public class CSVFileWriter {
         CSVWriter writer = new CSVWriter(new FileWriter(filename, false), separator);
 
         //Add header
-        writeHeader(mapSet, writer);
+        writeHeader(writer);
 
         for (String id : mapSet.keySet()) {
             String[] line = new String[2];
@@ -28,7 +28,6 @@ public class CSVFileWriter {
                     line[1] += entry.getSecondaryId() + " ";
                 }
             }
-
             writer.writeNext(line, false);
             writer.flush();
         }
@@ -36,7 +35,7 @@ public class CSVFileWriter {
     }
 
 
-    private static void writeHeader(MapSet<String, LogEntry> mapSet, CSVWriter writer) {
+    private static void writeHeader(CSVWriter writer) {
         String[] header = new String[] {HEADER_COLUMN[0], HEADER_COLUMN[1]};
         writer.writeNext(header, false);
     }
