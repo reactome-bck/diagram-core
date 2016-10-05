@@ -5,7 +5,8 @@ import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.input.model.Process;
 import org.reactome.server.diagram.converter.input.xml.SchemaProvider;
 import org.reactome.server.diagram.converter.input.xml.XMLValidationEventHandler;
-import org.reactome.server.diagram.converter.util.LogUtil;
+
+import org.reactome.server.diagram.converter.util.report.LogUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
