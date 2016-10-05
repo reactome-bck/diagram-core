@@ -129,7 +129,7 @@ public class PhysicalEntityNode {
             this.stId = "" + physicalEntity.getDBID();
             // Important
             // This is because the stable identifiers are not working properly
-            LogUtil.log(logger, Level.ERROR, "No stable identifier found for PhysicalEntity " + physicalEntity.getDBID());
+            LogUtil.log(logger, Level.ERROR, "No stable identifier found for entity " + physicalEntity.getDBID());
         }
     }
 

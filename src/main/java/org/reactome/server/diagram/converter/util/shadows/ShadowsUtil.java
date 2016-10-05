@@ -1,9 +1,8 @@
-package org.reactome.server.diagram.converter.util;
+package org.reactome.server.diagram.converter.util.shadows;
+
 
 import org.reactome.server.diagram.converter.layout.output.Shadow;
-import org.reactome.server.diagram.converter.util.partitioner.Box;
-import org.reactome.server.diagram.converter.util.partitioner.ShapePartition;
-import org.reactome.server.diagram.converter.util.partitioner.XYPoint;
+import org.reactome.server.diagram.converter.util.shadows.partitioner.*;
 
 import java.awt.*;
 import java.awt.geom.*;

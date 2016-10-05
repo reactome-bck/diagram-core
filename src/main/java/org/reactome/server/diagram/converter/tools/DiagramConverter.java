@@ -11,7 +11,7 @@ import org.reactome.server.diagram.converter.exception.MissingStableIdentifierEx
 import org.reactome.server.diagram.converter.graph.DiagramGraphFactory;
 import org.reactome.server.diagram.converter.graph.output.Graph;
 import org.reactome.server.diagram.converter.input.model.Process;
-import org.reactome.server.diagram.converter.input.xml.ProcessFactory;
+import org.reactome.server.diagram.converter.input.ProcessFactory;
 import org.reactome.server.diagram.converter.layout.LayoutFactory;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.util.DiagramFetcher;
@@ -29,8 +29,8 @@ public class DiagramConverter {
     private static Logger logger = Logger.getLogger(DiagramConverter.class.getName());
 
     private DiagramFetcher diagramFetcher;
-    private DiagramGraphFactory graphFactory;
     private ProcessFactory processFactory;
+    private DiagramGraphFactory graphFactory;
     private TrivialChemicals trivialChemicals;
 
     public DiagramConverter(MySQLAdaptor dba, GKInstance2ModelObject converter, String trivialChemicalsFile) {

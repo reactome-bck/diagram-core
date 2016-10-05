@@ -4,27 +4,35 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 
 /**
+ * This class reports all validation errors and warnings
+ * encountered during the unmarshal of the XML.
+ *
  * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
  */
 public class XMLValidationEventHandler implements ValidationEventHandler{
-    private StringBuilder internalBuffer = null;
+    private StringBuilder eventsBuffer = null;
 
-    public void setInternalBuffer(StringBuilder internalBuffer){
-        this.internalBuffer = internalBuffer;
+    public XMLValidationEventHandler() {
+        eventsBuffer = new StringBuilder();
     }
 
-    public StringBuilder getInternalBuffer(){
-        return internalBuffer;
+    public void clearEvents(){
+        if(eventsBuffer !=null) {
+            eventsBuffer.setLength(0);
+        }
+    }
+
+    public String getEvents(){
+            return eventsBuffer.toString();
     }
 
     @Override
     public boolean handleEvent(ValidationEvent event) {
-        if(internalBuffer !=null){
-            internalBuffer.append("XML Parsing Event:")
+        if(eventsBuffer !=null){
+            eventsBuffer.append("XML Parsing Event:")
                     .append(" MESSAGE:  ").append(event.getMessage())
                     .append(" LINE: ").append(event.getLocator().getLineNumber())
-                    .append(" COLUMN: ").append(event.getLocator().getColumnNumber())
-                    .append(" SEVERITY:  ").append(event.getSeverity());
+                    .append(" COLUMN: ").append(event.getLocator().getColumnNumber());
         }
         return true;
     }
