@@ -132,7 +132,50 @@ public class DiagramGraphFactory {
                 }
             }
         }
+
+        //Previous one checks whether the events in the diagram exist in the database but now we need
+        //to do it the other way around; see whether all the reactions in the model are in the diagram
+        try {
+            GKInstance pathway = dba.fetchInstance(diagram.getDbId());
+            Collection<Long> reactions = new HashSet<>();
+            Collection events = pathway.getAttributeValuesList(ReactomeJavaConstants.hasEvent);
+            if (events != null) {
+                for (Object e : pathway.getAttributeValuesList(ReactomeJavaConstants.hasEvent)) {
+                    if (e != null) reactions.addAll(getContainedReactions((GKInstance) e));
+                }
+            }
+
+            String createdBy = "";
+            try {
+                createdBy = ((GKInstance) pathway.getAttributeValue(ReactomeJavaConstants.created)).getDisplayName();
+            } catch (Exception e){ /*Nothing here*/}
+
+            for (Long reaction : reactions) {
+                if (!eventBuffer.keySet().contains(reaction)) {
+                    System.err.println("Diagram " + diagram.getStableId() + " is missing reaction " + reaction + " | created by: " + createdBy);
+                }
+            }
+
+        } catch (Exception e) {
+            //TODO
+        }
+
         return eventBuffer.values();
+    }
+
+    private Collection<Long> getContainedReactions(GKInstance event) throws Exception {
+        Collection<Long> rtn = new HashSet<>();
+        if (event.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent)) {
+            rtn.add(event.getDBID());
+        } else if (event.getSchemClass().isa(ReactomeJavaConstants.Pathway) && !hasDiagram(event)) {
+            Collection events = event.getAttributeValuesList(ReactomeJavaConstants.hasEvent);
+            if (events != null) {
+                for (Object aux : events) {
+                    rtn.addAll(getContainedReactions((GKInstance) aux));
+                }
+            }
+        }
+        return rtn;
     }
 
     private Collection<EventNode> getEventNodes(Collection<Edge> edges) {
