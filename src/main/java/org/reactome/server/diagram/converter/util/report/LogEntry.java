@@ -45,16 +45,19 @@ public class LogEntry {
         LogEntry logEntry = (LogEntry) o;
 
         if (!id.equals(logEntry.id)) return false;
+        if (secondaryId != null ? !secondaryId.equals(logEntry.secondaryId) : logEntry.secondaryId != null)
+            return false;
         if (type != logEntry.type) return false;
-        return message.equals(logEntry.message);
+        return message != null ? message.equals(logEntry.message) : logEntry.message == null;
 
     }
 
     @Override
     public int hashCode() {
         int result = id.hashCode();
+        result = 31 * result + (secondaryId != null ? secondaryId.hashCode() : 0);
         result = 31 * result + type.hashCode();
-        result = 31 * result + message.hashCode();
+        result = 31 * result + (message != null ? message.hashCode() : 0);
         return result;
     }
 }

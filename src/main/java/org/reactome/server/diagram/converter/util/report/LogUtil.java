@@ -36,14 +36,16 @@ public class LogUtil{
     }
 
     public static void log(Logger logger, Level level, String message){
-        if(VERBOSE) {
-            if(level.isGreaterOrEqual(Level.WARN)){
-                System.err.println(message);
-            }else{
-                System.out.println(message);
+        if(message!=null && !message.isEmpty()) {
+            if (VERBOSE) {
+                if (level.isGreaterOrEqual(Level.WARN)) {
+                    System.err.println(message);
+                } else {
+                    System.out.println(message);
+                }
             }
+            logger.log(level, message);
         }
-        logger.log(level, message);
     }
 
     public static void logError(Logger logger, LogEntry entry, Throwable error){
@@ -92,7 +94,8 @@ public class LogUtil{
             for (LogEntryType type : types) {
                 MapSet<String, LogEntry> mapSet = entriesMap.get(type);
                 try {
-                    CSVFileWriter.writeFile(type.name() + "_" + curDate, ',', mapSet);
+
+                    CSVFileWriter.writeFile(type.name() + "_" + curDate, ',', type, mapSet);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

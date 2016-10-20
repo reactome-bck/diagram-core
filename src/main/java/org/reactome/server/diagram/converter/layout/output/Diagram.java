@@ -3,6 +3,7 @@ package org.reactome.server.diagram.converter.layout.output;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.graph.output.SubpathwayNode;
+import org.reactome.server.diagram.converter.util.Beautifier;
 import org.reactome.server.diagram.converter.util.report.LogUtil;
 import org.reactome.server.diagram.converter.util.MapSet;
 import org.reactome.server.diagram.converter.util.shadows.ShadowsUtil;
@@ -11,6 +12,7 @@ import org.reactome.server.diagram.converter.util.report.LogEntry;
 import org.reactome.server.diagram.converter.util.report.LogEntryType;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -163,6 +165,7 @@ public class Diagram {
 
     public boolean addNode(Node node) {
         if(isDisease==null || !isDisease || shouldBeIncluded(node.id)){
+            node = Beautifier.processName(node);
             this.nodes.add(node.reactomeId, node);
             DiagramObject duplicateEntry = this.objectMap.put(node.id, node);
             if(duplicateEntry!=null){

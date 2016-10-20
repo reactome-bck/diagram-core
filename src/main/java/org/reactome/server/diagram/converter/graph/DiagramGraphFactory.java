@@ -1,5 +1,6 @@
 package org.reactome.server.diagram.converter.graph;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
@@ -11,6 +12,9 @@ import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.layout.output.Edge;
 import org.reactome.server.diagram.converter.layout.output.Node;
 import org.reactome.server.diagram.converter.util.MapSet;
+import org.reactome.server.diagram.converter.util.report.LogEntry;
+import org.reactome.server.diagram.converter.util.report.LogEntryType;
+import org.reactome.server.diagram.converter.util.report.LogUtil;
 
 import java.util.*;
 
@@ -152,12 +156,13 @@ public class DiagramGraphFactory {
 
             for (Long reaction : reactions) {
                 if (!eventBuffer.keySet().contains(reaction)) {
-                    System.err.println("Diagram " + diagram.getStableId() + " is missing reaction " + reaction + " | created by: " + createdBy);
+                    String message = "[" + diagram.getStableId() + "] is missing reaction " + reaction + " | created by: " + createdBy;
+                    LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.MISSING_REACTION, diagram.getStableId(), reaction + "", message));
                 }
             }
 
         } catch (Exception e) {
-            //TODO
+            //TODO Handdle this exception
         }
 
         return eventBuffer.values();

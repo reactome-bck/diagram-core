@@ -3,9 +3,12 @@ package org.reactome.server.diagram.converter.graph.model;
 import org.apache.log4j.Level;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
+import org.reactome.server.diagram.converter.layout.output.Node;
+import org.reactome.server.diagram.converter.util.Beautifier;
 import org.reactome.server.diagram.converter.util.report.LogUtil;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -31,6 +34,7 @@ public class PhysicalEntityNode {
     private List<String> geneNames = new LinkedList<>();
 
     public PhysicalEntityNode(GKInstance physicalEntity) {
+        physicalEntity = Beautifier.processName(physicalEntity);
         this.dbId = physicalEntity.getDBID();
         this.displayName = physicalEntity.getDisplayName();
         this.schemaClass = physicalEntity.getSchemClass().getName();
