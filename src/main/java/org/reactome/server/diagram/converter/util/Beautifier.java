@@ -24,7 +24,7 @@ public abstract class Beautifier {
             String aux = NAME_COPIED.matcher(object.displayName).replaceFirst("");
             aux = COORDINATES_COPIED.matcher(aux).replaceFirst("");
             if(!aux.equals(object.displayName)) {
-                log(object.id + "");
+                log(object.reactomeId+ "");
             }
             object.displayName = aux.trim();
             return (T) object;
