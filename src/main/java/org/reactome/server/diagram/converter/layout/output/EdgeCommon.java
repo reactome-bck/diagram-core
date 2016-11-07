@@ -142,7 +142,7 @@ public class EdgeCommon extends DiagramObject {
                                     rtn.add(reactionPart);
                                 }else{
                                     String message = "Reaction " + reactomeId + " has duplicate arrows pointing to diagram entity " + reactionPart.id;
-                                    LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.DUPLICATE_REACTIONPARTS_CORRECTED, reactomeId + "", reactionPart.id + "", message));
+                                    LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.DUPLICATE_REACTION_PARTS_CORRECTED, reactomeId + "", reactionPart.id + "", message));
                                 }
                             }
                         }
