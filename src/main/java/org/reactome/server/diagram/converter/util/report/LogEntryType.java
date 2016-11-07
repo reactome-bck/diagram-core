@@ -8,7 +8,8 @@ public enum LogEntryType {
     SUBPATHWAY_WITHOUT_PARTICIPANTS("#DiagramID"),
     DIAGRAM_EMPTY("#DiagramID"),
     MISSING_REACTION("#DiagramID", "#EventID"),
-    UGLY_NAMES_CORRECTED("#EntityID");
+    UGLY_NAMES_CORRECTED("#EntityID"),
+    DUPLICATE_REACTION_PARTS_CORRECTED("#ReactionID", "#PointingToEntity");
 
     private String[] columns;
 
