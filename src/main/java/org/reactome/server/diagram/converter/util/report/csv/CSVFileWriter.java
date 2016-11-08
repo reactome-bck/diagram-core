@@ -26,14 +26,16 @@ public class CSVFileWriter {
         for (String id : keys) {
             for (LogEntry entry : mapSet.getElements(id)) {
                 String[] line;
-                if(entry.getSecondaryId()!=null) {
-                    line = new String[2];
+                if(entry.getSecondaryIds()!=null) {
+                    line = new String[entry.getSecondaryIds().length + 1];
                     line[0] = id;
-                    line[1] = entry.getSecondaryId();
+                    //Add the rest of the secondary Ids in different columns
+                    for(int i = 0; i<entry.getSecondaryIds().length; i++){
+                        line[i+1] = entry.getSecondaryIds()[i];
+                    }
                 } else {
                     line = new String[1];
                     line[0] = id;
-
                 }
                 writer.writeNext(line, false);
                 writer.flush();

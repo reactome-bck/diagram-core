@@ -91,7 +91,7 @@ public class Diagram {
             }
             if(participants.isEmpty()){
                 String message = "[" + stableId + "] contains a subpathway without participants. ";
-                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.SUBPATHWAY_WITHOUT_PARTICIPANTS, stableId, message));
+                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.SUBPATHWAY_WITHOUT_PARTICIPANTS, message, stableId));
             }else {
                 shadows.add(new Shadow(getUniqueId(), subpathway, participants, colorId++));
             }
@@ -276,7 +276,7 @@ public class Diagram {
         boolean rtn = nodes.isEmpty() && !compartments.isEmpty();
         if(rtn) {
             String message = "[" + stableId + "] is empty and does not contain any entity apart from compartments";
-            LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.DIAGRAM_EMPTY, stableId, message));
+            LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.DIAGRAM_EMPTY, message, stableId));
         }
         return rtn;
     }

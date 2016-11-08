@@ -64,7 +64,8 @@ public abstract class LayoutFactory {
                 if(edgeCommon instanceof Link){
                     outputDiagram.addLink((Link) edgeCommon);
                 }else if(edgeCommon instanceof Edge){
-                    outputDiagram.addEdge((Edge) edgeCommon);
+                    //check for duplicated arrows pointing to the same diagram entity
+                    outputDiagram.addEdge((Edge) fixDuplicateArrows(edgeCommon));
                 }
             }
 
@@ -196,9 +197,37 @@ public abstract class LayoutFactory {
         }
         if (!correction.isEmpty()) {
             String message = "[" + outputDiagram.getStableId() + "] contains [" + obj.reactomeId + "] with RenderableClass: [" + obj.renderableClass + "] but this object has schemaClass [" + obj.schemaClass + "]. RenderableClass corrected to [" + correction + "]";
-            LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.RENDERABLECLASS_MISSMATCH, outputDiagram.getStableId(), "" + obj.reactomeId, message));
+            LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.RENDERABLECLASS_MISSMATCH, message, outputDiagram.getStableId(), "" + obj.reactomeId));
             obj.renderableClass = correction;
         }
+    }
+
+    // It checks and removes any duplicated arrows in a
+    // single reaction pointing to the same diagram entity
+    private static EdgeCommon fixDuplicateArrows(EdgeCommon edge){
+        String edgeId = edge.reactomeId + "";
+        processReactionParts(edgeId, edge.inputs);
+        processReactionParts(edgeId, edge.outputs);
+        processReactionParts(edgeId, edge.activators);
+        processReactionParts(edgeId, edge.catalysts);
+        processReactionParts(edgeId, edge.inhibitors);
+        return edge;
+    }
+
+    private static List<ReactionPart> processReactionParts(String edgeId, List<ReactionPart> reactionParts) {
+        if(reactionParts!=null) {
+            Set<Long> aux = new HashSet<>();
+            Iterator<ReactionPart> it = reactionParts.iterator();
+            while(it.hasNext()) {
+                ReactionPart reactionPart = it.next();
+                if (!aux.add(reactionPart.id)) {
+                    it.remove();
+                    String message = "[" + outputDiagram.getStableId() + "] has reaction " + edgeId + " with duplicate arrows pointing to the same diagram entity " + reactionPart.id;
+                    LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.DUPLICATE_REACTION_PARTS_CORRECTED, message, outputDiagram.getStableId(), edgeId + "", reactionPart.id + ""));
+                }
+            }
+        }
+        return reactionParts;
     }
 
     /*

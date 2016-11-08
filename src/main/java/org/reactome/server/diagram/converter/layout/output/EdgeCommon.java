@@ -1,12 +1,6 @@
 package org.reactome.server.diagram.converter.layout.output;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.reactome.server.diagram.converter.layout.LayoutFactory;
 import org.reactome.server.diagram.converter.util.ShapeBuilder;
-import org.reactome.server.diagram.converter.util.report.LogEntry;
-import org.reactome.server.diagram.converter.util.report.LogEntryType;
-import org.reactome.server.diagram.converter.util.report.LogUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,8 +10,6 @@ import java.util.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class EdgeCommon extends DiagramObject {
-    private static Logger logger = Logger.getLogger(EdgeCommon.class.getName());
-
     public String reactionType;
     public String interactionType;
 
@@ -127,7 +119,6 @@ public class EdgeCommon extends DiagramObject {
 
     private List<ReactionPart> extractReactionPart(Method method, Object object, String partMethod) {
         try {
-            Set<Long> aux = new HashSet<>();
             List<ReactionPart> rtn = new LinkedList<>();
             Object type = method.invoke(object);
             if(type==null) return null;
@@ -137,13 +128,7 @@ public class EdgeCommon extends DiagramObject {
                         List partList = (List) parts.invoke(type);
                         if (partList != null) {
                             for (Object part : partList) {
-                                ReactionPart reactionPart = new ReactionPart(part);
-                                if(aux.add(reactionPart.id)) {
-                                    rtn.add(reactionPart);
-                                }else{
-                                    String message = "Reaction " + reactomeId + " has duplicate arrows pointing to diagram entity " + reactionPart.id;
-                                    LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.DUPLICATE_REACTION_PARTS_CORRECTED, reactomeId + "", reactionPart.id + "", message));
-                                }
+                                rtn.add(new ReactionPart(part));
                             }
                         }
                     }

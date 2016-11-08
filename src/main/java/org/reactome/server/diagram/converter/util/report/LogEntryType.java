@@ -4,12 +4,12 @@ package org.reactome.server.diagram.converter.util.report;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public enum LogEntryType {
-    RENDERABLECLASS_MISSMATCH("#DiagramID", "#EntityID"),
-    SUBPATHWAY_WITHOUT_PARTICIPANTS("#DiagramID"),
-    DIAGRAM_EMPTY("#DiagramID"),
-    MISSING_REACTION("#DiagramID", "#EventID"),
-    UGLY_NAMES_CORRECTED("#EntityID"),
-    DUPLICATE_REACTION_PARTS_CORRECTED("#ReactionID", "#PointingToEntity");
+    RENDERABLECLASS_MISSMATCH("#Diagram", "#Entity"),
+    SUBPATHWAY_WITHOUT_PARTICIPANTS("#Diagram"),
+    DIAGRAM_EMPTY("#Diagram"),
+    MISSING_REACTION("#Diagram", "#Event"),
+    UGLY_NAMES_CORRECTED("#Entity"),
+    DUPLICATE_REACTION_PARTS_CORRECTED("#Diagram", "#Reaction", "#PointingTwiceTo");
 
     private String[] columns;
 

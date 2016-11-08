@@ -44,6 +44,6 @@ public abstract class Beautifier {
     }
 
     private static void log(String identifier) {
-        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.UGLY_NAMES_CORRECTED, identifier, null));
+        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.UGLY_NAMES_CORRECTED, null, identifier));
     }
 }

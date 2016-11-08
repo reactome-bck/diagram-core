@@ -157,7 +157,7 @@ public class DiagramGraphFactory {
             for (Long reaction : reactions) {
                 if (!eventBuffer.keySet().contains(reaction)) {
                     String message = "[" + diagram.getStableId() + "] is missing reaction " + reaction + " | created by: " + createdBy;
-                    LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.MISSING_REACTION, diagram.getStableId(), reaction + "", message));
+                    LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.MISSING_REACTION, message, diagram.getStableId(), reaction + ""));
                 }
             }
 

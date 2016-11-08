@@ -1,24 +1,26 @@
 package org.reactome.server.diagram.converter.util.report;
 
+import java.util.Arrays;
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class LogEntry {
     private String id;
-    private String secondaryId;
+    private String[] secondaryIds;
     private LogEntryType type;
     private String message;
 
-    public LogEntry(LogEntryType type, String id, String message) {
+    public LogEntry(LogEntryType type, String message, String id) {
         this.id = id;
         this.type = type;
         this.message = message;
-        this.secondaryId = null;
+        this.secondaryIds = null;
     }
 
-    public LogEntry(LogEntryType type, String id, String secondaryId, String message) {
-        this(type, id, message);
-        this.secondaryId = secondaryId;
+    public LogEntry(LogEntryType type, String message, String id, String...secondaryIds) {
+        this(type, message, id);
+        this.secondaryIds = secondaryIds;
     }
 
     public String getId() {
@@ -33,8 +35,8 @@ public class LogEntry {
         return message;
     }
 
-    public String getSecondaryId() {
-        return secondaryId;
+    public String[] getSecondaryIds() {
+        return secondaryIds;
     }
 
     @Override
@@ -45,19 +47,17 @@ public class LogEntry {
         LogEntry logEntry = (LogEntry) o;
 
         if (!id.equals(logEntry.id)) return false;
-        if (secondaryId != null ? !secondaryId.equals(logEntry.secondaryId) : logEntry.secondaryId != null)
-            return false;
-        if (type != logEntry.type) return false;
-        return message != null ? message.equals(logEntry.message) : logEntry.message == null;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(secondaryIds, logEntry.secondaryIds)) return false;
+        return type == logEntry.type;
 
     }
 
     @Override
     public int hashCode() {
         int result = id.hashCode();
-        result = 31 * result + (secondaryId != null ? secondaryId.hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(secondaryIds);
         result = 31 * result + type.hashCode();
-        result = 31 * result + (message != null ? message.hashCode() : 0);
         return result;
     }
 }
