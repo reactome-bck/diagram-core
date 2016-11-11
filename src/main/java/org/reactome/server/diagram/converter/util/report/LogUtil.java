@@ -95,7 +95,7 @@ public class LogUtil{
                 MapSet<String, LogEntry> mapSet = entriesMap.get(type);
                 try {
 
-                    CSVFileWriter.writeFile(type.name() + "_" + curDate, ',', type, mapSet);
+                    CSVFileWriter.writeFile(type.name() + "_" + curDate + ".csv", ',', type, mapSet);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

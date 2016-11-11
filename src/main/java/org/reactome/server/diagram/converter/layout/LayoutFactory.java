@@ -223,7 +223,7 @@ public abstract class LayoutFactory {
                 if (!aux.add(reactionPart.id)) {
                     it.remove();
                     String message = "[" + outputDiagram.getStableId() + "] has reaction " + edgeId + " with duplicate arrows pointing to the same diagram entity " + reactionPart.id;
-                    LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.DUPLICATE_REACTION_PARTS_CORRECTED, message, outputDiagram.getStableId(), edgeId + "", reactionPart.id + ""));
+                    LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.DUPLICATE_REACTION_PARTS, message, outputDiagram.getStableId(), edgeId + "", reactionPart.id + ""));
                 }
             }
         }
