@@ -24,17 +24,16 @@ public abstract class Beautifier {
             String aux = NAME_COPIED.matcher(object.displayName).replaceFirst("");
             aux = COORDINATES_COPIED.matcher(aux).replaceFirst("");
             if(!aux.equals(object.displayName)) {
-                log(object.reactomeId+ "");
+                log(object.reactomeId+ "", object.displayName);
             }
             object.displayName = aux.trim();
             return (T) object;
         } else if(input instanceof GKInstance) {
             GKInstance object = (GKInstance) input;
-            log(object.getDBID() + "");
             String aux = NAME_COPIED.matcher(object.getDisplayName()).replaceFirst("");
             aux = COORDINATES_COPIED.matcher(aux).replaceFirst("");
             if(!aux.equals(object.getDisplayName())) {
-                log(object.getDBID() + "");
+                log(object.getDBID() + "", object.getDisplayName());
             }
             object.setDisplayName(aux.trim());
             return (T) object;
@@ -43,7 +42,8 @@ public abstract class Beautifier {
         }
     }
 
-    private static void log(String identifier) {
-        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.VERY_LONG_NAMES, null, identifier));
+    private static void log(String identifier, String name) {
+        String message = identifier + " has a long name: " + name;
+        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.VERY_LONG_NAMES, message, identifier));
     }
 }
