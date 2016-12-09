@@ -44,6 +44,6 @@ public abstract class Beautifier {
 
     private static void log(String identifier, String name) {
         String message = identifier + " has a long name: " + name;
-        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.VERY_LONG_NAMES, message, identifier));
+        LogUtil.logSilently(logger, Level.WARN, new LogEntry(LogEntryType.VERY_LONG_NAMES, message, identifier));
     }
 }

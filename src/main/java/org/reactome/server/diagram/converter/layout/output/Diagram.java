@@ -103,6 +103,47 @@ public class Diagram {
         }
     }
 
+    /**
+     * Iterates over all Edges and Links and identifies the isolated glyphs
+     *
+     */
+    public void checkForIsolatedNodes(){
+        // proceed only if nodes and edges are not null
+        if(nodes==null || edges==null) { return;}
+
+        // generate a map of all nodes excluding the ProcessNodes (ugly green boxes)
+        HashMap<Long, Node> nodesMap = new HashMap<>();
+        for (NodeCommon node : nodes.values()) {
+            if(!node.renderableClass.equals("ProcessNode") && node.isFadeOut==null){
+                nodesMap.put(node.id, (Node) node);
+            }
+        }
+
+        // iterate over all Edges and check their ReactionParts
+        for (Edge edge : edges.values()) {
+            filterNodes(nodesMap, edge.inputs);
+            filterNodes(nodesMap, edge.outputs);
+            filterNodes(nodesMap, edge.catalysts);
+            filterNodes(nodesMap, edge.activators);
+            filterNodes(nodesMap, edge.inhibitors);
+        }
+
+        // iterate over all Links and check their ReactionParts
+        for (Link link : links.values()) {
+            filterNodes(nodesMap, link.inputs);
+            filterNodes(nodesMap, link.outputs);
+        }
+
+        if(nodesMap.size() > 0) {
+            LogUtil.log(logger, Level.WARN, "[" + stableId + "] - " + nodesMap.size() + " isolated glyphs found.");
+            for (Long entityId : nodesMap.keySet()) {
+                Node node = nodesMap.get(entityId);
+                String msg = "[" + stableId + "] Contains an isolated glyph: " + node.reactomeId + " | " + node.displayName;
+                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.ISOLATED_GLYPHS, msg, stableId, node.reactomeId + ""));
+            }
+        }
+    }
+
     public void setIsDisease(Boolean isDisease) {
         this.isDisease = isDisease;
     }
@@ -534,6 +575,14 @@ public class Diagram {
                 for (Link link : links.values()) {
                     link.isFadeOut = Boolean.TRUE;
                 }
+            }
+        }
+    }
+
+    private void filterNodes(HashMap<Long, Node> nodesMap, List<ReactionPart> reactionPartList){
+        if(reactionPartList!=null){
+            for(ReactionPart reactionPart : reactionPartList){
+                nodesMap.remove(reactionPart.id);
             }
         }
     }

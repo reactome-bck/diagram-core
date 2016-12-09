@@ -9,7 +9,10 @@ public enum LogEntryType {
     DIAGRAM_EMPTY("#Diagram"),
     MISSING_REACTION("#Diagram", "#Event"),
     VERY_LONG_NAMES("#Entity"),
-    DUPLICATE_REACTION_PARTS("#Diagram", "#Reaction", "#PointingTwiceTo");
+    DUPLICATE_REACTION_PARTS("#Diagram", "#Reaction", "#PointingTwiceTo"),
+    MISSING_STABLEIDS("#Entity"),
+    ISOLATED_GLYPHS("#Diagram", "#Entity");
+
 
     private String[] columns;
 

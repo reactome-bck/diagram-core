@@ -98,6 +98,9 @@ public abstract class LayoutFactory {
 
             //Set universal min max >> IMPORTANT: This has to always be done at the very end
             outputDiagram.setUniversalBoundaries();
+
+            //Check and report all isolated glyphs
+            outputDiagram.checkForIsolatedNodes();
         }
         return outputDiagram;
     }

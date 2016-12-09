@@ -5,6 +5,8 @@ import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
 import org.reactome.server.diagram.converter.layout.output.Node;
 import org.reactome.server.diagram.converter.util.Beautifier;
+import org.reactome.server.diagram.converter.util.report.LogEntry;
+import org.reactome.server.diagram.converter.util.report.LogEntryType;
 import org.reactome.server.diagram.converter.util.report.LogUtil;
 
 import java.util.*;
@@ -133,7 +135,7 @@ public class PhysicalEntityNode {
             this.stId = "" + physicalEntity.getDBID();
             // Important
             // This is because the stable identifiers are not working properly
-            LogUtil.log(logger, Level.ERROR, "No stable identifier found for entity " + physicalEntity.getDBID());
+            LogUtil.logSilently(logger, Level.WARN, new LogEntry(LogEntryType.MISSING_STABLEIDS, "No stable identifier found for entity " + physicalEntity.getDBID(), physicalEntity.getDBID() + ""));
         }
     }
 
