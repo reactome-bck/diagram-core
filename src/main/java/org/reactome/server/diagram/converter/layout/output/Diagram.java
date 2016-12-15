@@ -138,7 +138,7 @@ public class Diagram {
             LogUtil.log(logger, Level.WARN, "[" + stableId + "] - " + nodesMap.size() + " isolated glyphs found.");
             for (Long entityId : nodesMap.keySet()) {
                 Node node = nodesMap.get(entityId);
-                String msg = "[" + stableId + "] Contains an isolated glyph: " + node.reactomeId + " | " + node.displayName;
+                String msg = "[" + stableId + "] contains an isolated glyph: " + node.reactomeId + " | " + node.displayName;
                 LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.ISOLATED_GLYPHS, msg, stableId, node.reactomeId + ""));
             }
         }
@@ -412,6 +412,12 @@ public class Diagram {
                             segment.from.y);
                     // Shape is a filled arrow
                     edge.endShape = new Shape(points.get(0), points.get(1), points.get(2), Boolean.FALSE, Shape.Type.ARROW);
+
+                    //Check for overlapping reaction shapes and arrows
+                    if(edge.segments.size()==1 && edge.position.equals(edge.segments.get(0).to)) {
+                        String message = "[" + stableId + "] contains reaction " + edge.reactomeId + " with overlapping reaction shape and arrow";
+                        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.OVERLAPPING_REACTION_SHAPES, message, stableId, edge.reactomeId + ""));
+                    }
                 }
             }
         }

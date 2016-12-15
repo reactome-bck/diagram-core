@@ -11,7 +11,8 @@ public enum LogEntryType {
     VERY_LONG_NAMES("#Entity"),
     DUPLICATE_REACTION_PARTS("#Diagram", "#Reaction", "#PointingTwiceTo"),
     MISSING_STABLEIDS("#Entity"),
-    ISOLATED_GLYPHS("#Diagram", "#Entity");
+    ISOLATED_GLYPHS("#Diagram", "#Entity"),
+    OVERLAPPING_REACTION_SHAPES("#Diagram", "#Reaction");
 
 
     private String[] columns;
