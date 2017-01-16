@@ -4,15 +4,15 @@ package org.reactome.server.diagram.converter.util.report;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public enum LogEntryType {
-    RENDERABLECLASS_MISSMATCH("#Diagram", "#Entity"),
-    SUBPATHWAY_WITHOUT_PARTICIPANTS("#Diagram"),
-    DIAGRAM_EMPTY("#Diagram"),
+    RENDERABLECLASS_MISSMATCH("#Diagram", "#Entity"), //Fixed
+    SUBPATHWAY_WITHOUT_PARTICIPANTS("#Diagram"), //Not Fixed
+    DIAGRAM_EMPTY("#Diagram"), //Not Fixed
     MISSING_REACTION("#Diagram", "#Event"),
-    VERY_LONG_NAMES("#Entity"),
+    VERY_LONG_NAMES("#Entity"), //Fixed
     DUPLICATE_REACTION_PARTS("#Diagram", "#Reaction", "#PointingTwiceTo"),
-    MISSING_STABLEIDS("#Entity"),
-    ISOLATED_GLYPHS("#Diagram", "#Entity"),
-    OVERLAPPING_REACTION_SHAPES("#Diagram", "#Reaction");
+    MISSING_STABLEIDS("#Entity"), //Can be fixed with GHOST
+    ISOLATED_GLYPHS("#Diagram", "#Entity"), //Fixed
+    OVERLAPPING_REACTION_SHAPES("#Diagram", "#Reaction"); //Can be fixed?
 
 
     private String[] columns;

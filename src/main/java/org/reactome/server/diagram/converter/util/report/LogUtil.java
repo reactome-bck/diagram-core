@@ -31,35 +31,21 @@ public class LogUtil{
     }
 
     public static void log(Logger logger, Level level, LogEntry entry){
-        log(logger, level, entry, false);
-    }
-
-    public static void log(Logger logger, Level level, String message){
-        log(logger, level, message, false);
-    }
-
-    public static void logSilently(Logger logger, Level level, LogEntry entry){
-        log(logger, level, entry, true);
-    }
-
-    public static void logSilently(Logger logger, Level level, String message){
-        log(logger, level, message, true);
-    }
-
-    private static void log(Logger logger, Level level, LogEntry entry, boolean forceSilence){
-        log(logger, level, entry.getMessage(), forceSilence);
+        logger.log(level, entry.getMessage());
         processEntry(entry);
     }
 
-    private static void log(Logger logger, Level level, String message, boolean forceSilence){
+    public static void log(Logger logger, Level level, String message){
         if(message!=null && !message.isEmpty()) {
-            if (VERBOSE && !forceSilence) {
-                if (level.isGreaterOrEqual(Level.WARN)) {
-                    System.err.println(message);
-                } else if(level.isGreaterOrEqual(Level.INFO)){
-                    System.out.println(message);
-                }
+            logger.log(level, message);
+            if(VERBOSE) {
+                System.out.println(message);
             }
+        }
+    }
+
+    public static void logSilently(Logger logger, Level level, String message){
+        if(message!=null && !message.isEmpty()) {
             logger.log(level, message);
         }
     }
