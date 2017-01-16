@@ -59,7 +59,7 @@ public class Convertor2JsonTool {
                         "A file containing the ids and the names of the trivial molecules.")
                         , new QualifiedSwitch("target", JSAP.STRING_PARSER, "ALL", JSAP.NOT_REQUIRED, 't', "target",
                         "Target pathways to convert. Use either comma separated IDs, 'human' for human pathways or 'all' for everything ").setList(true).setListSeparator(',')
-                        , new QualifiedSwitch("verbose", JSAP.BOOLEAN_PARSER, "false", JSAP.NOT_REQUIRED, 'v', "verbose",
+                        , new QualifiedSwitch("verbose", JSAP.BOOLEAN_PARSER, null, JSAP.NOT_REQUIRED, 'v', "verbose",
                         "Requests verbose output.")
                 }
         );
