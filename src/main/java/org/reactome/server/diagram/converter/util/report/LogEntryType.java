@@ -8,7 +8,7 @@ public enum LogEntryType {
     SUBPATHWAY_WITHOUT_PARTICIPANTS("#Diagram"), //Not Fixed
     DIAGRAM_EMPTY("#Diagram"), //Not Fixed
     MISSING_REACTION("#Diagram", "#Event"),
-    VERY_LONG_NAMES("#Entity"), //Fixed
+    VERY_LONG_NAMES("#Entity"), //Not Fixed
     DUPLICATE_REACTION_PARTS("#Diagram", "#Reaction", "#PointingTwiceTo"),
     MISSING_STABLEIDS("#Entity"), //Can be fixed with GHOST
     ISOLATED_GLYPHS("#Diagram", "#Entity"), //Fixed

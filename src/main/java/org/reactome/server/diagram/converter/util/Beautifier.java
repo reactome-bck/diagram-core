@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public abstract class Beautifier {
-    private static Logger logger = Logger.getLogger(Beautifier.class.getName());
+//    private static Logger logger = Logger.getLogger(Beautifier.class.getName());
     private static Pattern NAME_COPIED = Pattern.compile("(\\(name copied from entity in)[\\s\\S]*?[\\)]");
     private static Pattern COORDINATES_COPIED = Pattern.compile("(\\(the coordinates are copied over from)[\\s\\S]*?[\\)]");
 
@@ -23,27 +23,16 @@ public abstract class Beautifier {
             DiagramObject object = (DiagramObject) input;
             String aux = NAME_COPIED.matcher(object.displayName).replaceFirst("");
             aux = COORDINATES_COPIED.matcher(aux).replaceFirst("");
-            if(!aux.equals(object.displayName)) {
-                log(object.reactomeId+ "", object.displayName);
-            }
             object.displayName = aux.trim();
             return (T) object;
         } else if(input instanceof GKInstance) {
             GKInstance object = (GKInstance) input;
             String aux = NAME_COPIED.matcher(object.getDisplayName()).replaceFirst("");
             aux = COORDINATES_COPIED.matcher(aux).replaceFirst("");
-            if(!aux.equals(object.getDisplayName())) {
-                log(object.getDBID() + "", object.getDisplayName());
-            }
             object.setDisplayName(aux.trim());
             return (T) object;
         } else {
             return input;
         }
-    }
-
-    private static void log(String identifier, String name) {
-        String message = identifier + " has a long name: " + name;
-        LogUtil.logSilently(logger, Level.WARN, new LogEntry(LogEntryType.VERY_LONG_NAMES, message, identifier));
     }
 }
