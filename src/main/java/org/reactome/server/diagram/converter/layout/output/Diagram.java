@@ -103,11 +103,13 @@ public class Diagram {
         }
     }
 
-    /**
-     * Iterates over all Edges and Links and identifies the isolated glyphs
+    /***
+     * Iterates over all Edges and Links and identifies the isolated glyphs.
+     * The method can also apply a fix by removing this glyph from the list of Nodes.
      *
+     * @param applyFix If true the fix is applied
      */
-    public void checkForIsolatedNodes(){
+    public void checkForIsolatedNodes(boolean applyFix){
         // proceed only if nodes and edges are not null
         if(nodes==null || edges==null) { return;}
 
@@ -135,11 +137,23 @@ public class Diagram {
         }
 
         if(nodesMap.size() > 0) {
-            LogUtil.log(logger, Level.WARN, "[" + stableId + "] - " + nodesMap.size() + " isolated glyphs found.");
+//            LogUtil.log(logger, Level.WARN, "[" + stableId + "] - " + nodesMap.size() + " isolated glyphs found.");
             for (Long entityId : nodesMap.keySet()) {
                 Node node = nodesMap.get(entityId);
                 String msg = "[" + stableId + "] contains an isolated glyph: " + node.reactomeId + " | " + node.displayName;
                 LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.ISOLATED_GLYPHS, msg, stableId, node.reactomeId + ""));
+                nodes.remove(entityId);
+
+                if(applyFix) {
+                    this.nodes.remove(entityId);
+                    if(isDisease!=null) {
+                        if (normalComponents != null)       normalComponents.remove(entityId);
+                        if (crossedComponents != null)      crossedComponents.remove(entityId);
+                        if (notFadeOut != null)             notFadeOut.remove(entityId);
+                        if (diseaseComponents != null)      diseaseComponents.remove(entityId);
+                        if (lofNodes != null)               lofNodes.remove(entityId);
+                    }
+                }
             }
         }
     }
@@ -384,7 +398,7 @@ public class Diagram {
 
         // Detect negative coordinates and print a warning message
         if(this.minX < 0 || this.minY < 0){
-            LogUtil.log(logger, Level.WARN, "[" + this.stableId + "] has negative boundaries ... MinX: " + this.minX + " MinY: " + this.minY);
+            LogUtil.logSilently(logger, Level.WARN, "[" + this.stableId + "] has negative boundaries ... MinX: " + this.minX + " MinY: " + this.minY);
         }
     }
 

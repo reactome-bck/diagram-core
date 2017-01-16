@@ -100,7 +100,7 @@ public abstract class LayoutFactory {
             outputDiagram.setUniversalBoundaries();
 
             //Check and report all isolated glyphs
-            outputDiagram.checkForIsolatedNodes();
+            outputDiagram.checkForIsolatedNodes(true);
         }
         return outputDiagram;
     }
