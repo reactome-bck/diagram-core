@@ -91,7 +91,7 @@ public class Diagram {
             }
             if(participants.isEmpty()){
                 String message = "[" + stableId + "] contains a subpathway without participants. ";
-                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.SUBPATHWAY_WITHOUT_PARTICIPANTS, message, stableId));
+                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.SUBPATHWAY_WITHOUT_PARTICIPANTS, message, stableId, subpathway.stId, subpathway.displayName));
             }else {
                 shadows.add(new Shadow(getUniqueId(), subpathway, participants, colorId++));
             }
