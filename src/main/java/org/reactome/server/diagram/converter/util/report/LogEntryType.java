@@ -12,7 +12,7 @@ public enum LogEntryType {
     DUPLICATE_REACTION_PARTS("#Diagram", "#Reaction", "#PointingTwiceTo"),
     MISSING_STABLEIDS("#Entity"), //Can be fixed with GHOST
     ISOLATED_GLYPHS("#Diagram", "#Entity"), //Fixed
-    OVERLAPPING_REACTION_SHAPES("#Diagram", "#Reaction"); //Can be fixed?
+    OVERLAPPING_REACTION_SHAPES_ON_REACTOMECURATOR("#Diagram", "#Reaction"); //Can be fixed?
 
 
     private String[] columns;

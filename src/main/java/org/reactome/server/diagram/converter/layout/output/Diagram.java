@@ -12,7 +12,6 @@ import org.reactome.server.diagram.converter.util.report.LogEntry;
 import org.reactome.server.diagram.converter.util.report.LogEntryType;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -430,7 +429,7 @@ public class Diagram {
                     //Check for overlapping reaction shapes and arrows
                     if(edge.segments.size()==1 && edge.position.equals(edge.segments.get(0).to)) {
                         String message = "[" + stableId + "] contains reaction " + edge.reactomeId + " with overlapping reaction shape and arrow";
-                        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.OVERLAPPING_REACTION_SHAPES, message, stableId, edge.reactomeId + ""));
+                        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.OVERLAPPING_REACTION_SHAPES_ON_REACTOMECURATOR, message, stableId, edge.reactomeId + ""));
                     }
                 }
             }
