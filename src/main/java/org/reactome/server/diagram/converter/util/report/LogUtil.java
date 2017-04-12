@@ -1,12 +1,15 @@
 package org.reactome.server.diagram.converter.util.report;
 
 import org.apache.log4j.Appender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.net.SMTPAppender;
+import org.reactome.server.diagram.converter.util.FileUtil;
 import org.reactome.server.diagram.converter.util.MapSet;
 import org.reactome.server.diagram.converter.util.report.csv.CSVFileWriter;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -88,21 +91,36 @@ public class LogUtil{
         mapSet.add(entry.getId(), entry);
     }
 
+    private static void clearQAFiles(String folder) {
+        FileUtil.deleteFiles(folder, "csv");
+    }
+
+    private static String getLogsFolder() {
+        String rtn = "";
+        FileAppender appender = (FileAppender) Logger.getRootLogger().getAppender("FILE");
+        if (appender!=null) {
+            File file = new File(appender.getFile());
+            rtn = file.getParent() +  File.separator;
+        }
+        return rtn;
+    }
+
     public static void writeCSVFiles() {
+        //Clean up log folder
+        String logsFolder = getLogsFolder();
+        clearQAFiles(logsFolder);
+
         Set<LogEntryType> types = entriesMap.keySet();
         if(types!=null && !types.isEmpty()) {
-            String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
             for (LogEntryType type : types) {
                 MapSet<String, LogEntry> mapSet = entriesMap.get(type);
                 try {
-
-                    CSVFileWriter.writeFile(type.name() + "_" + curDate + ".csv", ',', type, mapSet);
+                    CSVFileWriter.writeFile(logsFolder + type.getFilename() + ".csv", ',', type, mapSet);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
-
     }
 }

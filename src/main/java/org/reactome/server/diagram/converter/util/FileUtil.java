@@ -69,7 +69,7 @@ public abstract class FileUtil {
 
         logger.info(folderName + " is a valid directory name");
 
-        if(folderName.endsWith( File.separator) ){
+        if(folderName.endsWith(File.separator) ){
            return folderName.substring( 0, folderName.length() - 2);
         }else{
             return folderName;
@@ -77,14 +77,41 @@ public abstract class FileUtil {
 
     }
 
+    public static int deleteAllSymbolicFiles(String folderToCheck) {
+        File targetFolder = new File(folderToCheck);
+        int count = 0;
+        for (File file: targetFolder.listFiles()) {
+            Path targetFile = file.toPath();
+            if(Files.isSymbolicLink(targetFile)) {
+                if(file.delete()) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    public static int deleteFiles(String folder, String fileExtension) {
+        int count = 0;
+        for (File file : listAllFilesInFolder(folder, fileExtension)) {
+            if(file.delete()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public static String getFileExtension(String fullPath){
         int dot = fullPath.lastIndexOf(".");
         return fullPath.substring(dot + 1);
     }
 
-    public static List<File> listAllFilesInFolder(File folderToCheck, String fileExtension){
-        List<File> filesListToreturn = new ArrayList<File>();
+    public static List<File> listAllFilesInFolder(String folderToCheck, String fileExtension){
+        return listAllFilesInFolder(new File(folderToCheck), fileExtension);
+    }
 
+    public static List<File> listAllFilesInFolder(File folderToCheck, String fileExtension){
+        List<File> filesListToreturn = new ArrayList<>();
         File[] listOfFiles = folderToCheck.listFiles();
 
         for (int i = 0; i < listOfFiles.length; i++) {
@@ -96,7 +123,7 @@ public abstract class FileUtil {
                 }
 
             } else if (listOfFiles[i].isDirectory()) {
-                //ignore folders
+                //ignore folders for now
             }
 
         }

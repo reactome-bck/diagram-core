@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd"[
         <!ENTITY logNameBase "DiagramCore">
-        <!ENTITY logRoot "./">
+        <!ENTITY logRoot "./logs">
         ]>
 <log4j:configuration debug="false"
                      xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
-    <appender name="SPRING" class="org.apache.log4j.RollingFileAppender">
-        <param name="append" value="true" />
+    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="append" value="false" />
         <param name="maxFileSize" value="10MB" />
         <param name="maxBackupIndex" value="10" />
         <param name="file" value="&logRoot;/log.out" />
@@ -55,7 +55,7 @@
      <!--Define the root logger with its appenders-->
     <root>
         <level value="INFO" />
-        <appender-ref ref="SPRING" />
+        <appender-ref ref="FILE" />
         <!--<appender-ref ref="CONSOLE" />-->
         <appender-ref ref="MAIL_REPORT" />
     </root>

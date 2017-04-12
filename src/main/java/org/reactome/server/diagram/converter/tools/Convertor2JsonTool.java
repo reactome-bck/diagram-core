@@ -1,6 +1,7 @@
 package org.reactome.server.diagram.converter.tools;
 
 import com.martiansoftware.jsap.*;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;

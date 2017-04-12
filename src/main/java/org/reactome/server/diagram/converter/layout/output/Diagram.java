@@ -136,7 +136,6 @@ public class Diagram {
         }
 
         if(nodesMap.size() > 0) {
-//            LogUtil.log(logger, Level.WARN, "[" + stableId + "] - " + nodesMap.size() + " isolated glyphs found.");
             for (Long entityId : nodesMap.keySet()) {
                 Node node = nodesMap.get(entityId);
                 String msg = "[" + stableId + "] contains an isolated glyph: " + node.reactomeId + " | " + node.displayName;
