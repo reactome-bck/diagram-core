@@ -139,7 +139,7 @@ public class Diagram {
             for (Long entityId : nodesMap.keySet()) {
                 Node node = nodesMap.get(entityId);
                 String msg = "[" + stableId + "] contains an isolated glyph: " + node.reactomeId + " | " + node.displayName;
-                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.ISOLATED_GLYPHS, msg, stableId, node.reactomeId + ""));
+                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.ISOLATED_GLYPHS, msg, stableId, node.reactomeId + "", node.displayName));
                 nodes.remove(entityId);
 
                 if(applyFix) {
