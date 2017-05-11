@@ -2,13 +2,15 @@ package org.reactome.server.diagram.converter.layout;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.gk.model.GKInstance;
+import org.gk.model.PersistenceAdaptor;
 import org.reactome.server.diagram.converter.input.model.*;
 import org.reactome.server.diagram.converter.input.model.Process;
 import org.reactome.server.diagram.converter.input.model.Properties;
 import org.reactome.server.diagram.converter.layout.output.*;
-import org.reactome.server.diagram.converter.util.report.LogUtil;
 import org.reactome.server.diagram.converter.util.report.LogEntry;
 import org.reactome.server.diagram.converter.util.report.LogEntryType;
+import org.reactome.server.diagram.converter.util.report.LogUtil;
 
 import java.io.Serializable;
 import java.util.*;
@@ -22,7 +24,7 @@ public abstract class LayoutFactory {
     private static Logger logger = Logger.getLogger(LayoutFactory.class.getName());
     private static Diagram outputDiagram = null;
 
-    public static Diagram getDiagramFromProcess(Process inputProcess, Long dbId, String stId) {
+    public static Diagram getDiagramFromProcess(Process inputProcess, Long dbId, String stId, PersistenceAdaptor persistenceAdaptor) {
 
         if(inputProcess!=null) {
             outputDiagram = new Diagram();
@@ -46,7 +48,7 @@ public abstract class LayoutFactory {
             outputDiagram.setLofNodes(ListToSet(extractListFromString(inputProcess.getLofNodes(), ",")));
 
             //Parse Nodes
-            for (NodeCommon nodeCommon : extractNodesList(inputProcess.getNodes())) {
+            for (NodeCommon nodeCommon : extractNodesList(inputProcess.getNodes(), persistenceAdaptor)) {
                 if(nodeCommon instanceof Node) {
                     outputDiagram.addNode((Node) nodeCommon);
                 }else if(nodeCommon instanceof Note){
@@ -105,7 +107,7 @@ public abstract class LayoutFactory {
         return outputDiagram;
     }
 
-    private static List<NodeCommon> extractNodesList(Nodes inputNodes){
+    private static List<NodeCommon> extractNodesList(Nodes inputNodes, PersistenceAdaptor persistenceAdaptor){
         List<NodeCommon> rtn = new LinkedList<>();
 
         if(inputNodes==null){
@@ -125,12 +127,7 @@ public abstract class LayoutFactory {
                         clazz.equals(OrgGkRenderRenderableEntity.class)     ||
                         clazz.equals(OrgGkRenderRenderableGene.class) ){
                     Node node = new Node(inputNode);
-                    // Sometimes a node does not have a schemaClass
-                    if(node.schemaClass==null) {
-                        String message = "[" + outputDiagram.getStableId() + "] contains entity [dbid:" + node.reactomeId + "] without a schemaClass";
-                        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.SCHEMACLASS_MISSING, message, outputDiagram.getStableId(), node.reactomeId + "", node.displayName + "", node.renderableClass));
-                        continue;
-                    }
+                    if (!fixSchemaClass(node, persistenceAdaptor)) continue;
                     fixBrokenRenderableClass(node);
                     rtn.add(node);
                 }else if(clazz.equals(OrgGkRenderNote.class) ){
@@ -146,6 +143,23 @@ public abstract class LayoutFactory {
         return rtn;
     }
 
+    // Sometimes a node does not have a schemaClass
+    private static boolean fixSchemaClass(Node node, PersistenceAdaptor persistenceAdaptor) {
+        if (node.schemaClass == null) {
+            String message;
+            try {
+                GKInstance nodeInstance = persistenceAdaptor.fetchInstance(node.reactomeId);
+                node.schemaClass = nodeInstance.getSchemClass().getName();
+            } catch (Exception e) {
+                message = "[" + outputDiagram.getStableId() + "] contains entity [dbid:" + node.reactomeId + "] that does not exist in the database";
+                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.OBJECT_NOT_LONGER_IN_DATABASE, message, outputDiagram.getStableId(), node.reactomeId + ""));
+                return false;
+            }
+            message = "[" + outputDiagram.getStableId() + "] contains entity [dbid:" + node.reactomeId + "] without a schemaClass";
+            LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.SCHEMACLASS_MISSING, message, outputDiagram.getStableId(), node.reactomeId + "", node.displayName + "", node.renderableClass));
+        }
+        return true;
+    }
 
     private static Map<String, Serializable> extractProperties(Properties inputProps){
         Map<String, Serializable> props = new HashMap<>();
