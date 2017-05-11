@@ -62,29 +62,30 @@ public class Diagram {
                 if(edges==null) continue; // For subpathways pointing to a process node (encapsulated pathway)
                 participants.addAll(edges);
                 for (Edge edge : edges) {
+                    DiagramObject obj;
                     if(edge.inputs!=null)
                     for (ReactionPart part : edge.inputs) {
-                        participants.add(this.objectMap.get(part.id));
+                        if ((obj= this.objectMap.get(part.id)) != null) participants.add(obj);
                     }
 
                     if(edge.outputs!=null)
                     for (ReactionPart part : edge.outputs) {
-                        participants.add(this.objectMap.get(part.id));
+                        if ((obj= this.objectMap.get(part.id)) != null) participants.add(obj);
                     }
 
                     if(edge.catalysts!=null)
                     for (ReactionPart part : edge.catalysts) {
-                        participants.add(this.objectMap.get(part.id));
+                        if ((obj= this.objectMap.get(part.id)) != null) participants.add(obj);
                     }
 
                     if(edge.activators!=null)
                     for (ReactionPart part : edge.activators) {
-                        participants.add(this.objectMap.get(part.id));
+                        if ((obj= this.objectMap.get(part.id)) != null) participants.add(obj);
                     }
 
                     if(edge.inhibitors!=null)
                     for (ReactionPart part : edge.inhibitors) {
-                        participants.add(this.objectMap.get(part.id));
+                        if ((obj= this.objectMap.get(part.id)) != null) participants.add(obj);
                     }
                 }
             }
