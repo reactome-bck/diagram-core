@@ -127,7 +127,8 @@ public abstract class LayoutFactory {
                     Node node = new Node(inputNode);
                     // Sometimes a node does not have a schemaClass
                     if(node.schemaClass==null) {
-                        LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains entity [dbid:" + node.reactomeId + "] without a schemaClass");
+                        String message = "[" + outputDiagram.getStableId() + "] contains entity [dbid:" + node.reactomeId + "] without a schemaClass";
+                        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.SCHEMACLASS_MISSING, message, outputDiagram.getStableId(), node.reactomeId + "", node.displayName + "", node.renderableClass));
                         continue;
                     }
                     fixBrokenRenderableClass(node);
@@ -138,7 +139,7 @@ public abstract class LayoutFactory {
                 }else if (clazz.equals(OrgGkRenderRenderableCompartment.class) ){
                     rtn.add(new Compartment(inputNode));
                 }else{
-                    LogUtil.log(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains a not recognised NODE type - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
+                    LogUtil.logSilently(logger, Level.WARN, "[" + outputDiagram.getStableId() + "] contains a not recognised NODE type - " + clazz.getName() + " [" + clazz.getSimpleName() + "]");
                 }
             }
         }

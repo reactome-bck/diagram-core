@@ -5,6 +5,7 @@ package org.reactome.server.diagram.converter.util.report;
  */
 public enum LogEntryType {
     RENDERABLECLASS_MISMATCH("RenderableClassMismatch", "#Diagram", "#Entity", "#Name"), //Fixed
+    SCHEMACLASS_MISSING("SchemaClassMissing", "#Diagram", "#Entity", "#Name", "#RenderableClass"),
     SUBPATHWAY_WITHOUT_PARTICIPANTS("SubpathwayWithoutParticipants", "#Diagram", "#Subpathway", "#SubpathwayName"), //Not Fixed
     DIAGRAM_EMPTY("DiagramEmpty", "#Diagram"), //Not Fixed
     MISSING_REACTION("MissingReaction", "#Diagram", "#Event"),
