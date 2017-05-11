@@ -39,6 +39,11 @@ public class LogEntry {
         return secondaryIds;
     }
 
+    public String getMainIdentifier(int index){
+        if(index==0) return this.id;
+        return secondaryIds[index - 1];
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
