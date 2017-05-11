@@ -5,6 +5,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.net.SMTPAppender;
+import org.gk.persistence.MySQLAdaptor;
 import org.reactome.server.diagram.converter.util.FileUtil;
 import org.reactome.server.diagram.converter.util.MapSet;
 import org.reactome.server.diagram.converter.util.report.csv.CSVFileWriter;
@@ -105,7 +106,7 @@ public class LogUtil{
         return rtn;
     }
 
-    public static void writeCSVFiles() {
+    public static void writeCSVFiles(MySQLAdaptor dba) {
         //Clean up log folder
         String logsFolder = getLogsFolder();
         clearQAFiles(logsFolder);
@@ -116,7 +117,7 @@ public class LogUtil{
             for (LogEntryType type : types) {
                 MapSet<String, LogEntry> mapSet = entriesMap.get(type);
                 try {
-                    CSVFileWriter.writeFile(logsFolder + type.getFilename() + ".csv", ',', type, mapSet);
+                    CSVFileWriter.writeFile(dba, logsFolder + type.getFilename() + ".csv", ',', type, mapSet);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

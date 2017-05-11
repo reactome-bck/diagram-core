@@ -10,14 +10,14 @@ import org.reactome.server.diagram.converter.exception.DiagramNotFoundException;
 import org.reactome.server.diagram.converter.exception.MissingStableIdentifierException;
 import org.reactome.server.diagram.converter.graph.DiagramGraphFactory;
 import org.reactome.server.diagram.converter.graph.output.Graph;
-import org.reactome.server.diagram.converter.input.model.Process;
 import org.reactome.server.diagram.converter.input.ProcessFactory;
+import org.reactome.server.diagram.converter.input.model.Process;
 import org.reactome.server.diagram.converter.layout.LayoutFactory;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.util.DiagramFetcher;
 import org.reactome.server.diagram.converter.util.FileUtil;
-import org.reactome.server.diagram.converter.util.report.LogUtil;
 import org.reactome.server.diagram.converter.util.TrivialChemicals;
+import org.reactome.server.diagram.converter.util.report.LogUtil;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -80,7 +80,7 @@ public class DiagramConverter {
             String xml = diagramFetcher.getPathwayDiagramXML(pathway);
             if (xml != null) {
                 Process process = processFactory.createProcess(xml, stId);
-                return LayoutFactory.getDiagramFromProcess(process, pathway.getDBID(), stId);
+                return LayoutFactory.getDiagramFromProcess(process, pathway.getDBID(), stId, pathway.getDbAdaptor());
             }
         } catch (Exception e) {
             LogUtil.logError(logger,"Conversion failed. The following error occurred while converting the diagram for " + pathway.getDisplayName(), e);

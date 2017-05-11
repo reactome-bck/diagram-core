@@ -1,7 +1,6 @@
 package org.reactome.server.diagram.converter.tools;
 
 import com.martiansoftware.jsap.*;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
@@ -14,11 +13,14 @@ import org.reactome.core.model.Species;
 import org.reactome.server.diagram.converter.Main;
 import org.reactome.server.diagram.converter.graph.DiagramGraphFactory;
 import org.reactome.server.diagram.converter.graph.output.Graph;
-import org.reactome.server.diagram.converter.input.model.Process;
 import org.reactome.server.diagram.converter.input.ProcessFactory;
+import org.reactome.server.diagram.converter.input.model.Process;
 import org.reactome.server.diagram.converter.layout.LayoutFactory;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
-import org.reactome.server.diagram.converter.util.*;
+import org.reactome.server.diagram.converter.util.DiagramFetcher;
+import org.reactome.server.diagram.converter.util.FileUtil;
+import org.reactome.server.diagram.converter.util.JsonWriter;
+import org.reactome.server.diagram.converter.util.TrivialChemicals;
 import org.reactome.server.diagram.converter.util.report.LogUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -181,7 +183,7 @@ public class Convertor2JsonTool {
             }
         }
         // Generate the CSV reports
-        LogUtil.writeCSVFiles();
+        LogUtil.writeCSVFiles(dba);
 
         // send all email reports
         LogUtil.sendEmailReports();
@@ -210,7 +212,7 @@ public class Convertor2JsonTool {
             String xml = diagramFetcher.getPathwayDiagramXML(pathway);
             if (xml != null) {
                 Process process = processFactory.createProcess(xml, stId);
-                return LayoutFactory.getDiagramFromProcess(process, pathway.getDBID(), stId);
+                return LayoutFactory.getDiagramFromProcess(process, pathway.getDBID(), stId, pathway.getDbAdaptor());
             }
         } catch (Exception e) {
             LogUtil.logError(logger,"[" + stId + "] conversion failed. The following error occurred while converting pathway diagram:", e);
