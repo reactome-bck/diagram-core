@@ -215,7 +215,7 @@ public abstract class LayoutFactory {
         }
         if (!correction.isEmpty()) {
             String message = "[" + outputDiagram.getStableId() + "] contains [" + obj.reactomeId + "] with RenderableClass: [" + obj.renderableClass + "] but this object has schemaClass [" + obj.schemaClass + "]. RenderableClass corrected to [" + correction + "]";
-            LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.RENDERABLECLASS_MISMATCH, message, outputDiagram.getStableId(), "" + obj.reactomeId, obj.displayName));
+            LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.RENDERABLECLASS_MISMATCH, message, outputDiagram.getStableId(), "" + obj.reactomeId, obj.displayName, obj.renderableClass, obj.schemaClass));
             obj.renderableClass = correction;
         }
     }

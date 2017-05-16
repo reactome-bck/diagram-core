@@ -6,7 +6,7 @@ import org.apache.commons.lang.ArrayUtils;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public enum LogEntryType {
-    RENDERABLECLASS_MISMATCH("RenderableClassMismatch", 1, "#Diagram", "#Entity", "#Name"), //Fixed
+    RENDERABLECLASS_MISMATCH("RenderableClassMismatch", 1, "#Diagram", "#Entity", "#Name", "#Is","#ShouldBe"), //Fixed
     SCHEMACLASS_MISSING("SchemaClassMissing", 1, "#Diagram", "#Entity", "#Name", "#RenderableClass"),
     OBJECT_NOT_LONGER_IN_DATABASE("ObjectNotLongerInDatabase", 1, "#Diagram", "#Entity"),
     SUBPATHWAY_WITHOUT_PARTICIPANTS("SubpathwayWithoutParticipants", 1, "#Diagram", "#Subpathway", "#SubpathwayName"), //Not Fixed

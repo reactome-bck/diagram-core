@@ -327,7 +327,7 @@ public class Diagram {
     }
 
     public boolean checkIfEmpty() {
-        boolean rtn = nodes.isEmpty() && !compartments.isEmpty();
+        boolean rtn = nodes.isEmpty();
         if(rtn) {
             String message = "[" + stableId + "] is empty and does not contain any entity apart from compartments";
             LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.DIAGRAM_EMPTY, message, stableId));
@@ -340,9 +340,11 @@ public class Diagram {
                 (forNormalDraw == false) &&
                 (notFadeOut == null || notFadeOut.isEmpty())) {
             if(nodes==null || nodes.isEmpty()){
-                throw new RuntimeException("The nodes have not been initialised yet");
+                LogUtil.logSilently(logger, Level.WARN, "The nodes have not been initialised yet");
+                return;
             }else if(edges==null || edges.isEmpty()){
-                throw new RuntimeException("The edges have not been initialised yet");
+                LogUtil.logSilently(logger, Level.WARN, "The edges have not been initialised yet");
+                return;
             }
 
             for (Node node : nodes.values()) {
@@ -520,9 +522,11 @@ public class Diagram {
     public void setDiseaseComponents(){
         if(diseaseComponents!=null && !diseaseComponents.isEmpty()){
             if(nodes==null || nodes.isEmpty()){
-                throw new RuntimeException("The nodes have not been initialised yet");
+                LogUtil.logSilently(logger, Level.WARN, "The nodes have not been initialised yet");
+                return;
             }else if(edges==null || edges.isEmpty()){
-                throw new RuntimeException("The edges have not been initialised yet");
+                LogUtil.logSilently(logger, Level.WARN, "The edges have not been initialised yet");
+                return;
             }
 
             for (Node node : nodes.values()) {
@@ -566,7 +570,8 @@ public class Diagram {
     public void setOverlaidObjects(){
         if(notFadeOut!=null && !notFadeOut.isEmpty()) {
             if(nodes==null || nodes.isEmpty()){
-                throw new RuntimeException("The nodes have not been initialised yet");
+                LogUtil.logSilently(logger, Level.WARN, "The nodes have not been initialised yet");
+                return;
             }
             for (Node node : nodes.values()) {
                 if (!notFadeOut.contains(node.id)) {
@@ -582,7 +587,8 @@ public class Diagram {
             }
 
             if(edges==null || edges.isEmpty()){
-                throw new RuntimeException("The edges have not been initialised yet");
+                LogUtil.logSilently(logger, Level.WARN, "The edges have not been initialised yet");
+                return;
             }
             for (Edge edge : edges.values()) {
                 if (!notFadeOut.contains(edge.id)){
