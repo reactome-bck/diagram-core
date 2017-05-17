@@ -2,10 +2,7 @@ package org.reactome.server.diagram.converter.util;
 
 import org.apache.log4j.Logger;
 import org.reactome.server.diagram.converter.graph.model.PhysicalEntityNode;
-import org.reactome.server.diagram.converter.layout.output.Diagram;
-import org.reactome.server.diagram.converter.layout.output.Edge;
-import org.reactome.server.diagram.converter.layout.output.Node;
-import org.reactome.server.diagram.converter.layout.output.ReactionPart;
+import org.reactome.server.diagram.converter.layout.output.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -60,6 +57,13 @@ public class TrivialChemicals {
             for (Edge edge : diagram.getEdges()) {
                 noTrivial.addAll(getNotTrivialMolecules(trivialMolecules, edge.inputs));
                 noTrivial.addAll(getNotTrivialMolecules(trivialMolecules, edge.outputs));
+            }
+
+            // Trivial molecules that are connected to
+            // flow lines are always visible
+            for (Link link : diagram.getLinks()) {
+                noTrivial.addAll(getNotTrivialMolecules(trivialMolecules, link.inputs));
+                noTrivial.addAll(getNotTrivialMolecules(trivialMolecules, link.outputs));
             }
 
             for (Node node : noTrivial) {
