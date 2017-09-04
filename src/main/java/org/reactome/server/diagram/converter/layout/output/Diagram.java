@@ -161,6 +161,10 @@ public class Diagram {
         this.isDisease = isDisease;
     }
 
+    public boolean isDisease() {
+        return (isDisease!=null && isDisease);
+    }
+
     public void setNormalComponents(Set<Long> normalComponents) {
         this.normalComponents = normalComponents;
     }

@@ -31,11 +31,14 @@ public class DiagramGraphFactory {
 
     public MySQLAdaptor dba;
 
+    private Diagram diagram;
+
     public DiagramGraphFactory(MySQLAdaptor dba) {
         this.dba = dba;
     }
 
     public Graph getGraph(Diagram diagram) {
+        this.diagram = diagram;
         return new Graph(diagram.getDbId(),
                 diagram.getStableId(),
                 getGraphNodes(diagram),
@@ -189,6 +192,9 @@ public class DiagramGraphFactory {
             for (Edge edge : edges) {
                 if (edge.isFadeOut != null) continue;
                 EventNode eNode = getOrCreate(edge);
+                if (!diagram.isDisease()) {
+                    checkEventParticipants(eNode);
+                }
                 eNode.addDiagramId(edge.id);
             }
         }
@@ -309,5 +315,22 @@ public class DiagramGraphFactory {
 
     public Map<Long, PhysicalEntityNode> getPhysicalEntityMap() {
         return physicalEntityBuffer;
+    }
+
+    private void checkEventParticipants(EventNode eNode) {
+        List<Long> participantIds = new LinkedList<>();
+        if(eNode.getInputs() != null)           participantIds.addAll(eNode.getInputs());
+        if(eNode.getOutputs() != null)          participantIds.addAll(eNode.getOutputs());
+        if(eNode.getActivators() != null)       participantIds.addAll(eNode.getActivators());
+        if(eNode.getInhibitors() != null)       participantIds.addAll(eNode.getInhibitors());
+        if(eNode.getCatalysts() != null)        participantIds.addAll(eNode.getCatalysts());
+
+        participantIds.forEach(dbId -> {
+            PhysicalEntityNode pe = physicalEntityBuffer.get(dbId);
+            if (pe == null) {
+                String msg = "[" + diagram.getStableId() + "] contains an event [" + eNode.getStId() + "] with a potentially wrongly annotated glyph " + dbId;
+                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.EVENTS_WITH_WRONG_GLYPHS, msg, diagram.getStableId(), eNode.getStId(), dbId + ""));
+            }
+        });
     }
 }

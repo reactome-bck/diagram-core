@@ -16,8 +16,8 @@ public enum LogEntryType {
     DUPLICATE_REACTION_PARTS("DuplicateReactionParts", 1, "#Diagram", "#Reaction", "#PointingTwiceTo"),
     MISSING_STABLEIDS("MissingStableIds", 0, "#Entity"), //Can be fixed with GHOST
     ISOLATED_GLYPHS("IsolatedGlyphs", 1, "#Diagram", "#Entity", "Name"), //Fixed
-    OVERLAPPING_REACTION_SHAPES_ON_REACTOMECURATOR("OverlappingReactionShapesOnReactomeCurator", 1, "#Diagram", "#Reaction"); //Can be fixed?
-
+    OVERLAPPING_REACTION_SHAPES_ON_REACTOMECURATOR("OverlappingReactionShapesOnReactomeCurator", 1, "#Diagram", "#Reaction"), //Can be fixed?
+    EVENTS_WITH_WRONG_GLYPHS("EventsWithWrongGlyphs", 1, "#Diagram", "#Reaction", "#Participant"); //Fixed
 
     private String[] columns;
     private String filename;
