@@ -11,6 +11,7 @@ import org.reactome.server.diagram.converter.graph.output.*;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.layout.output.Edge;
 import org.reactome.server.diagram.converter.layout.output.Node;
+import org.reactome.server.diagram.converter.layout.output.ReactionPart;
 import org.reactome.server.diagram.converter.util.MapSet;
 import org.reactome.server.diagram.converter.util.report.LogEntry;
 import org.reactome.server.diagram.converter.util.report.LogEntryType;
@@ -51,6 +52,8 @@ public class DiagramGraphFactory {
     //The buffer is used in building time to avoid querying/decomposition of those previously processed
     private Map<Long, PhysicalEntityNode> physicalEntityBuffer;
 
+    private Map<Long, PhysicalEntityNode> diagramEntityMap;
+
     private Set<EntityNode> getGraphNodes(Diagram diagram) {
         Set<EntityNode> rtn = new HashSet<>();
         for (PhysicalEntityNode pe : getPhysicalEntityNodes(diagram.getNodes())) {
@@ -61,6 +64,7 @@ public class DiagramGraphFactory {
 
     private Collection<PhysicalEntityNode> getPhysicalEntityNodes(Collection<Node> nodes) {
         this.physicalEntityBuffer = new HashMap<>();
+        this.diagramEntityMap = new HashMap<>();
         for (Node node : nodes) {
             if (node.isFadeOut != null) continue;
             try {
@@ -69,6 +73,7 @@ public class DiagramGraphFactory {
                         instance.getSchemClass().isa(ReactomeJavaConstants.Pathway)) {
                     PhysicalEntityNode peNode = process(instance);
                     peNode.addDiagramId(node.id);
+                    diagramEntityMap.put(node.id, peNode);
                 } else {
                     logger.error(node.displayName + " is not a PhysicalEntity");
                 }
@@ -193,7 +198,8 @@ public class DiagramGraphFactory {
                 if (edge.isFadeOut != null) continue;
                 EventNode eNode = getOrCreate(edge);
                 if (!diagram.isDisease()) {
-                    checkEventParticipants(eNode);
+//                    checkEventParticipants(eNode);
+                    checkForMissingEventParticipants(edge);
                 }
                 eNode.addDiagramId(edge.id);
             }
@@ -317,20 +323,34 @@ public class DiagramGraphFactory {
         return physicalEntityBuffer;
     }
 
-    private void checkEventParticipants(EventNode eNode) {
-        List<Long> participantIds = new LinkedList<>();
-        if(eNode.getInputs() != null)           participantIds.addAll(eNode.getInputs());
-        if(eNode.getOutputs() != null)          participantIds.addAll(eNode.getOutputs());
-        if(eNode.getActivators() != null)       participantIds.addAll(eNode.getActivators());
-        if(eNode.getInhibitors() != null)       participantIds.addAll(eNode.getInhibitors());
-        if(eNode.getCatalysts() != null)        participantIds.addAll(eNode.getCatalysts());
+    private void checkForMissingEventParticipants(Edge edge) {
+        EventNode eNode = eventBuffer.get(edge.reactomeId);
+        if(eNode!=null) {
+            checkParticipantsList(eNode, edge.inputs, eNode.getInputs(), "input");
+            checkParticipantsList(eNode, edge.outputs, eNode.getOutputs(), "output");
+            checkParticipantsList(eNode, edge.activators, eNode.getActivators(), "activator");
+            checkParticipantsList(eNode, edge.catalysts, eNode.getCatalysts(), "catalyst");
+            checkParticipantsList(eNode, edge.inhibitors, eNode.getInhibitors(), "inhibitor");
+        }
+    }
 
-        participantIds.forEach(dbId -> {
-            PhysicalEntityNode pe = physicalEntityBuffer.get(dbId);
-            if (pe == null) {
-                String msg = "[" + diagram.getStableId() + "] contains an event [" + eNode.getStId() + "] with a potentially wrongly annotated glyph " + dbId;
-                LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.EVENTS_WITH_WRONG_GLYPHS, msg, diagram.getStableId(), eNode.getStId(), dbId + ""));
+    private void checkParticipantsList(EventNode eNode, List<ReactionPart> targets, Set<Long> checkAgainst, String role) {
+        if (targets != null) {
+            for (ReactionPart rp : targets) {
+                PhysicalEntityNode peNode = diagramEntityMap.get(rp.id);
+                if (peNode == null) {
+                    logMisAnnotatedDiagramEntity(eNode, peNode, role);
+                } else {
+                    if(checkAgainst!=null && !checkAgainst.contains(peNode.getDbId())) {
+                        logMisAnnotatedDiagramEntity(eNode, peNode, role);
+                    }
+                }
             }
-        });
+        }
+    }
+
+    private void logMisAnnotatedDiagramEntity(EventNode eNode, PhysicalEntityNode peNode, String role) {
+        String msg = "[" + diagram.getStableId() + "] contains an event [" + eNode.getStId() + "] with a missing diagram entity [" + peNode.getStId() + "] as its " + role;
+        LogUtil.log(logger, Level.WARN, new LogEntry(LogEntryType.MISSING_EVENT_PARTICIPANTS_FROM_DIAGRAMS, msg, diagram.getStableId(), eNode.getStId(), peNode.getStId(), role));
     }
 }
