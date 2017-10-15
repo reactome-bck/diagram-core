@@ -116,7 +116,7 @@ public class Node extends NodeCommon {
             }
         }
         if (interactorsSummary != null) {
-            xx.add(interactorsSummary.shape.minY);
+            xx.add(interactorsSummary.shape.minX);
             yy.add(interactorsSummary.shape.minY);
             xx.add(interactorsSummary.shape.maxX);
             yy.add(interactorsSummary.shape.maxY);
