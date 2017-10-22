@@ -104,10 +104,11 @@ public class DiagramGraphFactory {
     private Set<GKInstance> getContainedPhysicalEntities(GKInstance physicalEntity) {
         Set<GKInstance> rtn = new HashSet<>();
         SchemaClass schemaClass = physicalEntity.getSchemClass();
-        if (schemaClass.isa(ReactomeJavaConstants.Complex) || schemaClass.isa(ReactomeJavaConstants.EntitySet)) {
+        if (schemaClass.isa(ReactomeJavaConstants.Complex) || schemaClass.isa(ReactomeJavaConstants.EntitySet) || schemaClass.isa(ReactomeJavaConstants.Polymer)) {
             rtn.addAll(getPhysicalEntityAttr(physicalEntity, ReactomeJavaConstants.hasComponent));
             rtn.addAll(getPhysicalEntityAttr(physicalEntity, ReactomeJavaConstants.hasMember));
             rtn.addAll(getPhysicalEntityAttr(physicalEntity, ReactomeJavaConstants.hasCandidate));
+            rtn.addAll(getPhysicalEntityAttr(physicalEntity, ReactomeJavaConstants.repeatedUnit));
         }
         return rtn;
     }
